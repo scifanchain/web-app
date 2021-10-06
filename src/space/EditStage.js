@@ -1,7 +1,7 @@
 import React, { useEffect, useState, render } from 'react';
 import { Switch, Route, Link, useHistory, useParams, Redirect  } from 'react-router-dom';
 
-import { Button, Dimmer, Loader, Grid, Sticky, Message, Input, Divider } from 'semantic-ui-react';
+import { Button, Dimmer, Loader, Grid, Sticky, Message, Input, Divider, Icon } from 'semantic-ui-react';
 import EditorJS from '@editorjs/editorjs';
 
 import { get, put, post } from '../utils/Request';
@@ -22,7 +22,18 @@ export default function EditStage() {
     const [stageTitle, setStageTitle] = useState('')
     const [stageContent, setStageContent] = useState('')
     const [error, setError] = useState('');
+    const [wordsCount, setWordsCount] = useState(0)
 
+    // 统计字数
+    const countWords = (title, content) => {
+        const rows = content.blocks.length;
+        let words_count = title.length;
+        for (let i = 0; i < rows; i++) {
+            const content_text = content.blocks[i].data.text.replace(/<\/?.+?>/g, "");
+            words_count += content_text.length;
+        }
+        setWordsCount(words_count);
+    }
 
     useEffect(() => {
         get('api/stages/' + params.stage_id + '/', {}, true)
@@ -31,7 +42,8 @@ export default function EditStage() {
                 setLoading(false);
                 console.log(res.data);
                 setStageTitle(res.data.title);
-                setStageContent(res.data.content)
+                setStageContent(res.data.content);
+                countWords(res.data.title, res.data.content);
 
                 // 加载编辑器
                 const editor = new EditorJS({
@@ -41,6 +53,8 @@ export default function EditStage() {
                     onChange: () => {
                         editor.save().then((outputData) => {
                             setStageContent(outputData)
+                            console.log(outputData)
+                            countWords(res.data.title, outputData);
                         }).catch
                             ((error) => {
                                 console.log('Saving failed: ', error)
@@ -67,7 +81,7 @@ export default function EditStage() {
         if (stageTitle.length >= 1) {
             setTitleError('')
         }
-        console.log(stageTitle)
+        countWords(e.target.value, stageContent);
     }
 
     // 验证标题是否为空
@@ -121,6 +135,7 @@ export default function EditStage() {
             {contentError &&
                 <Message>{contentError}</Message>
             }
+            <p class='font-small'> <Icon name='buysellads'/> {wordsCount} 字</p>
             <div className='editor-wrap'>
                 <Input fluid className='stage-title-input' onChange={handleChange} value={ stageTitle }/>
                 <div id='editorjs' className='editor-content'></div>
