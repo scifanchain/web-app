@@ -1,26 +1,16 @@
-import React, { useState, createRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Dimmer, Loader, Grid, Header, Button, Message, Divider, Icon, Segment } from 'semantic-ui-react';
-import { useLocation, useParams } from 'react-router-dom'
-
+import { useParams } from 'react-router-dom'
 import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
 import { DeveloperConsole } from '../substrate-lib/components';
-
-import ReactMarkdown from 'react-markdown';
-
-import axios from 'axios'
-
-import Poe from '../chain/Poe'
-
+import Poe from '../chain/PoE';
 import StageEditor from '../widget/StageEditor';
-
-import MenuLeft from '../widget/Menus';
 import { get } from '../utils/Request';
 
 function Main() {
 
     const [accountAddress, setAccountAddress] = useState('5GTUkiFUo2tZNtprDYnn8PvG5tus6AUHTp12YyUo8ZeJEKK8');
     const { apiState, keyring, keyringState, apiError } = useSubstrate();
-
     const [loading, setLoading] = useState(true);
     const [stage, setStage] = useState([])
     const [error, setError] = useState('')

@@ -5,52 +5,10 @@ import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
 
 import EditorJS from '@editorjs/editorjs';
 
-import { Button, Dimmer, Loader, Divider, Icon, Rating, Progress, Grid, Popup } from 'semantic-ui-react';
+import { Button, Icon, Rating, Progress, Grid, Popup } from 'semantic-ui-react';
 import { get } from '../utils/Request';
 
-import Poe from '../chain/Poe';
-
-
-function PoEPanel(props) {
-    const storage = window.localStorage;
-    const { apiState, keyring, keyringState, apiError } = useSubstrate();
-
-    const [accountAddress, setAccountAddress] = useState('');
-
-    const { stage } = props;
-
-    useEffect(() => {
-        get('authors/my_wallets/' + storage.getItem('scifanchain_user_id') + '/', {}, true).then((res) => {
-            setAccountAddress(res.data.address)
-        }, []);
-    });
-
-    // 获取当前账户
-    const accountPair =
-        accountAddress &&
-        keyringState === 'READY' &&
-        keyring.getPair(accountAddress);
-
-    const loader = text =>
-        <Dimmer active inverted>
-            <Loader size='small'>{text}</Loader>
-        </Dimmer>;
-
-    if (apiState === 'ERROR') return message(apiError);
-    else if (apiState !== 'READY') return loader('正在连接链上数据……');
-
-    if (keyringState !== 'READY') {
-        return loader('Loading accounts (please review any extension\'s authorization)');
-    }
-
-    return (
-        <div>
-            {accountPair &&
-                <Poe accountPair={accountPair} stage={stage} />
-            }
-        </div>
-    )
-};
+import PoE from '../chain/PoE';
 
 
 export default function StageDetail() {
@@ -62,6 +20,8 @@ export default function StageDetail() {
     const [maturity, setMaturity] = useState(0);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+
+    const [handlePoE, setHandlePoE] = useState(false);
 
     // 加载数据
     useEffect(() => {
@@ -91,6 +51,14 @@ export default function StageDetail() {
             });
     }, []);
 
+    const startPoE = () => {
+        setHandlePoE(true);
+    }
+
+    const cancelPoE = () => {
+        setHandlePoE(false);
+    }
+
     const stageOpeness = () => {
         switch (stage.openess) {
             case 'PUBLIC': return '开放的';
@@ -105,10 +73,20 @@ export default function StageDetail() {
 
     return (
         <div>
-            <SubstrateContextProvider>
-                <PoEPanel stage={stage} />
-                <br />
-            </SubstrateContextProvider>
+            {!handlePoE &&
+                <Button onClick={startPoE}>上链存证</Button>
+            }
+            {handlePoE &&
+                <Button onClick={cancelPoE}>退出存证</Button>
+            }
+            <Button onClick={startPoE}>获取SFT</Button>
+
+            {handlePoE &&
+                <SubstrateContextProvider>
+                    <PoE stage={stage} />
+                </SubstrateContextProvider>
+            }
+
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={14}>
@@ -144,8 +122,8 @@ export default function StageDetail() {
                             }
                         }
                         )()}
-                            <Button icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
-                                <Icon name='edit' /> 修改</Button>
+                        <Button icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
+                            <Icon name='edit' /> 修改</Button>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Form, Button, Message, Icon, Input, Loader, } from 'semantic-ui-react';
+import { Button, Message, Icon, Input, Loader, Dimmer, Segment } from 'semantic-ui-react';
 
 import { useSubstrate } from '../substrate-lib';
 import { TxButton } from '../substrate-lib/components';
 // Polkadot-JS utilities for hashing data.
 import { blake2AsHex } from '@polkadot/util-crypto';
 
-import { put } from '../utils/Request';
+import { get } from '../utils/Request';
 
 
 export function Main(props) {
-  // Establish an API to talk to our Substrate node.
-  const { api } = useSubstrate();
-  // Get the selected user from the `AccountSelector` component.
-  const { accountPair, stage } = props;
-  // React hooks for all the state variables we track.
-  // Learn more at: https://reactjs.org/docs/hooks-intro.html
+  const { api, apiState, keyring, keyringState, apiError } = useSubstrate();
+
+  const storage = window.localStorage;
+
+  const { stage } = props;
+
+  const [accountAddress, setAccountAddress] = useState('');
   const [status, setStatus] = useState('');
   const [digest, setDigest] = useState('');
   const [owner, setOwner] = useState('');
@@ -25,6 +26,32 @@ export function Main(props) {
 
   const passwordInput = useRef('');
 
+  useEffect(() => {
+    get('authors/my_wallets/' + storage.getItem('scifanchain_user_id') + '/', {}, true)
+      .then((res) => {
+        setAccountAddress(res.data.address);
+      });
+  }, []);
+
+  // 获取当前账户
+  const accountPair =
+    accountAddress &&
+    keyringState === 'READY' &&
+    keyring.getPair(accountAddress);
+
+  const loader = text =>
+    <Dimmer.Dimmable style={{ padding: 1 + 'rem' }}>
+      <Dimmer active inverted>
+        <Loader size='small'>{text}</Loader>
+      </Dimmer>
+    </Dimmer.Dimmable>
+
+  if (apiState === 'ERROR') return message(apiError);
+  else if (apiState !== 'READY') return loader('加载数据中，请稍侯……');
+
+  if (keyringState !== 'READY') {
+    return loader('Loading accounts (please review any extension\'s authorization)');
+  }
 
   // 哈希内容
   const hashStage = (address, stage) => {
@@ -61,11 +88,6 @@ export function Main(props) {
     // (when a new file is chosen), or when the storage subscription says the
     // value of the storage item has updated.
     return () => unsubscribe && unsubscribe();
-  }
-
-  // 取消验证
-  const cancelPoE = () => {
-    setDigest('')
   }
 
   // We can say a file digest is claimed if the stored block number is not 0.
@@ -105,10 +127,7 @@ export function Main(props) {
       <p>
         通过加密之后的Hash(哈希)值来与链上存证数据比对，以查验当前内容是否在链上存证。
       </p>
-      <Button onClick={queryPoE} color='teal'>验证Hash值</Button>
-      {digest &&
-        <Button onClick={cancelPoE}>取消验证</Button>
-      }
+      <Button onClick={queryPoE} color='teal'>验证内容</Button>
       {digest && block === 0 &&
         <Message warning
           icon='sync'
@@ -127,7 +146,7 @@ export function Main(props) {
       {digest && isClaimed && accountPair.isLocked &&
         <div>
           <p>进行链上存证或撤消操作，需要用令牌密码解锁您的令牌（钱包）账号。<br />
-            <span style={{ color: 'orange', fontSize: 1+ 'rem' }}>提醒：令牌密码是生成钱包时所设置的密码，与网站的登录密码不同。</span>
+            <span style={{ color: 'orange', fontSize: 1 + 'rem' }}>提醒：令牌密码是生成钱包时所设置的密码，与网站的登录密码不同。</span>
           </p>
           <Input type='password' placeholder='令牌密码...' onChange={getPassword} action>
             <input />
@@ -185,8 +204,8 @@ export function Main(props) {
   )
 }
 
-export default function Poe(props) {
-  const { api } = useSubstrate();
-  return (api.query.poe && api.query.poe.proofs
-    ? <Main {...props} /> : null);
+export default function PoE(props) {
+  return (
+    <Main {...props} />
+  );
 }

@@ -106,7 +106,6 @@ export default function SpaceHome() {
                             <Route path='/space/stage/edit/:stage_id' component={EditStage} />
                             <Route path='/space/stage/:stage_id' component={StageDetail} />
                         </Switch>
-                        {/* <StageEditor stage={{}} /> */}
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
