@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react';
+import { Button, Loader } from 'semantic-ui-react';
 import { web3FromSource } from '@polkadot/extension-dapp';
 
 import { useSubstrate } from '../';
 import utils from '../utils';
 
-function TxButton ({
+function TxButton({
   accountPair = null,
   label,
   setStatus,
-  color = 'blue',
+  color = '',
   style = null,
   type = 'QUERY',
   attrs = null,
@@ -62,11 +62,11 @@ function TxButton ({
 
   const txResHandler = ({ status }) =>
     status.isFinalized
-      ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
-      : setStatus(`Current transaction status: ${status.type}`);
+      ? setStatus(`😉 完成。您的操作已被记录于Block: ${status.asFinalized.toString()}`)
+      : setStatus(`当前交易状态: ${status.type}`);
 
   const txErrHandler = err =>
-    setStatus(`😞 Transaction Failed: ${err.toString()}`);
+    setStatus(`😞 失败: ${err.toString()}`);
 
   const sudoTx = async () => {
     const fromAcct = await getFromAcct();
@@ -214,7 +214,6 @@ function TxButton ({
 
   return (
     <Button
-      basic
       color={color}
       style={style}
       type='submit'

@@ -11,7 +11,7 @@ import {
   Label
 } from 'semantic-ui-react';
 
-import { useSubstrate } from './substrate-lib';
+import { useSubstrate } from '../substrate-lib';
 
 function Main (props) {
   const { keyring } = useSubstrate();
@@ -49,13 +49,30 @@ function Main (props) {
         backgroundColor: '#fff',
         borderColor: '#fff',
         paddingTop: '1em',
-        paddingBottom: '1em'
+        paddingBottom: '1em',
+        marginBottom: '1em'
       }}
     >
       <Container>
-        <Menu.Menu>
-          <Image src={`${process.env.PUBLIC_URL}/assets/substrate-logo.png`} size='mini' />
-        </Menu.Menu>
+        <Menu>
+          <Menu.Item
+            name='editorials'
+          >
+            Editorials
+          </Menu.Item>
+
+          <Menu.Item
+            name='reviews'
+          >
+            Reviews
+          </Menu.Item>
+
+          <Menu.Item
+            name='upcomingEvents'
+          >
+            Upcoming Events
+          </Menu.Item>
+        </Menu>
         <Menu.Menu position='right' style={{ alignItems: 'center' }}>
           { !accountSelected
             ? <span>
