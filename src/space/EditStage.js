@@ -99,14 +99,18 @@ export default function EditStage() {
         if (titleValidated() && contentValidated()) {
             put(
                 'works/stage/update/' + params.stage_id + '/',
-                { "title": stageTitle, "content": stageContent, "owner": storage.getItem('scifanchain_user_id') },
+                {
+                    "title": stageTitle,
+                    "content": stageContent,
+                    "owner": storage.getItem('scifanchain_user_id'),
+                    "words_count": wordsCount
+                },
                 true
             ).then(function (response) {
                 console.log(response);
-            })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            }).catch(function (error) {
+                console.log(error);
+            });
             // history.push('/space/stage/' + params.stage_id);
 
             window.location = '/space/stage/' + params.stage_id;
@@ -126,7 +130,7 @@ export default function EditStage() {
             }
             <p className='font-small'> <Icon name='buysellads' /> {wordsCount} 字</p>
             <div className='editor-wrap'>
-                <Input fluid className='stage-title-input' onChange={handleChange} value={stageTitle} id='StageTitle'/>
+                <Input fluid className='stage-title-input' onChange={handleChange} value={stageTitle} id='StageTitle' />
                 <div id='editorjs' className='editor-content'></div>
                 <Button fluid style={{ marginTop: '1rem' }} onClick={postStage}>提交修改</Button>
             </div>

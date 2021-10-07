@@ -44,6 +44,7 @@ export function Main(props) {
       <Dimmer active inverted>
         <Loader size='small'>{text}</Loader>
       </Dimmer>
+      <br />
     </Dimmer.Dimmable>
 
   if (apiState === 'ERROR') return message(apiError);

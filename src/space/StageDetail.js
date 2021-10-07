@@ -5,7 +5,7 @@ import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
 
 import EditorJS from '@editorjs/editorjs';
 
-import { Button, Icon, Rating, Progress, Grid, Popup } from 'semantic-ui-react';
+import { Button, Icon, Rating, Progress, Grid, Popup, Divider } from 'semantic-ui-react';
 import { get } from '../utils/Request';
 
 import PoE from '../chain/PoE';
@@ -87,50 +87,41 @@ export default function StageDetail() {
                 </SubstrateContextProvider>
             }
 
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={14}>
-                        <p>
-                            <span>Token指数: 23.56 SFT</span>
-                        </p>
-                    </Grid.Column>
-                    <Grid.Column width={2} textAlign='right'>
-                        {(() => {
-                            switch (stage.openess) {
-                                case 'PUBLIC':
-                                    return <Popup
-                                        trigger={<Icon circular name='world' />}
-                                        content='开放作品，任何登录用户皆可参与。'
-                                        size='mini'
-                                    />;
-                                    break;
-                                case 'SEMI_PUBLIC':
-                                    return <Popup
-                                        trigger={<Icon circular name='shield' />}
-                                        content='受保护作品，只允许受邀请的作者参与。'
-                                        size='mini'
-                                    />;;
-                                    break;
-                                case 'PRIVATE':
-                                    return <Popup
-                                        trigger={<Icon circular name='user secret' />}
-                                        content='私密作品，只有创建者可以修改。'
-                                        size='mini'
-                                    />;;
-                                    break;
-                                default: return null;
-                            }
-                        }
-                        )()}
-                        <Button icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
-                            <Icon name='edit' /> 修改</Button>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            <Divider/>
+
             <div className='editor-wrap'>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column width={6}>
+                        <Grid.Column width={1}>
+                            {(() => {
+                                switch (stage.openess) {
+                                    case 'PUBLIC':
+                                        return <Popup
+                                            trigger={<Icon name='compress' />}
+                                            content='开放作品，任何登录用户皆可参与。'
+                                            size='mini'
+                                        />;
+                                        break;
+                                    case 'SEMI_PUBLIC':
+                                        return <Popup
+                                            trigger={<Icon name='shield' />}
+                                            content='受保护作品，只允许受邀请的作者参与。'
+                                            size='mini'
+                                        />;;
+                                        break;
+                                    case 'PRIVATE':
+                                        return <Popup
+                                            trigger={<Icon name='user secret' />}
+                                            content='私密作品，只有创建者可以修改。'
+                                            size='mini'
+                                        />;;
+                                        break;
+                                    default: return null;
+                                }
+                            }
+                            )()}
+                        </Grid.Column>
+                        <Grid.Column width={4}>
                             <Progress percent={stage.maturity} indicating size='tiny' id='MaturityProgress' />
                             <Grid>
                                 <Grid.Row columns={5} textAlign='center' className='font-small'>
@@ -142,8 +133,13 @@ export default function StageDetail() {
                                 </Grid.Row>
                             </Grid>
                         </Grid.Column>
-                        <Grid.Column width={10} textAlign='right'>
-                            <Rating icon='star' defaultRating={0} maxRating={5} />
+                        
+                        <Grid.Column width={9} textAlign='center'>
+                            <Rating />
+                        </Grid.Column>
+                        <Grid.Column width={2} textAlign='right'>
+                            <Button size='tiny' icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
+                                <Icon name='edit' /> 修改</Button>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

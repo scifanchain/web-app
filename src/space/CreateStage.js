@@ -73,11 +73,14 @@ export default function CreateStage() {
     // 提交
     const postStage = () => {
         if (titleValidated() && contentValidated()) {
-            post('api/stages/', {
-                "title": stageTitle,
-                "content": stageContent,
-                "owner": storage.getItem('scifanchain_user_id')
-            }, true)
+            post('api/stages/',
+                {
+                    "title": stageTitle,
+                    "content": stageContent,
+                    "owner": storage.getItem('scifanchain_user_id'),
+                    "words_count": wordsCount
+                },
+                true)
                 .then(function (response) {
                     console.log(response);
                 })
@@ -94,7 +97,7 @@ export default function CreateStage() {
                 <Grid.Column width={12}>
                     <p className='font-small'> <Icon name='buysellads' /> {wordsCount} 字</p>
                     <div className='editor-wrap'>
-                        <Input fluid placeholder='故事标题...' className='stage-title-input' onChange={handleChange} id='StageTitle'/>
+                        <Input fluid placeholder='故事标题...' className='stage-title-input' onChange={handleChange} id='StageTitle' />
                         <div id='editorjs' className='editor-content'></div>
                         <Button fluid style={{ marginTop: '1rem' }} onClick={postStage}>发表</Button>
                     </div>
