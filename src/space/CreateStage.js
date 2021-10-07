@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Switch, Route, Link, useHistory } from 'react-router-dom';
 
-import { Button, Dimmer, Loader, Grid, Sticky, Message, Input } from 'semantic-ui-react';
+import { Button, Dimmer, Loader, Grid, Sticky, Message, Input, Icon } from 'semantic-ui-react';
 import EditorJS from '@editorjs/editorjs';
 
-import {post} from '../utils/Request'
+import { post } from '../utils/Request';
+import { countWords } from '../utils/Tools';
 
 export default function CreateStage() {
     const history = useHistory();
     const storage = window.localStorage;
 
-    const [title, setTitle] = useState('')
-    const [titleError, setTitleError] = useState('')
-    const [contentError, setContentError] = useState('')
-    const [dataStage, setDataStage] = useState({})
-
+    const [stageTitle, setStageTitle] = useState('');
+    const [stageContent, setStageContent] = useState({});
+    const [titleError, setTitleError] = useState('');
+    const [contentError, setContentError] = useState('');
+    const [wordsCount, setWordsCount] = useState(0);
 
     useEffect(() => {
         const editor = new EditorJS({
@@ -26,7 +27,8 @@ export default function CreateStage() {
             placeholder: '点击这里开始创作！',
             onChange: () => {
                 editor.save().then((outputData) => {
-                    setDataStage(outputData)
+                    setStageContent(outputData);
+                    setWordsCount(countWords(document.getElementById("StageTitle").value, outputData));
                 }).catch
                     ((error) => {
                         console.log('Saving failed: ', error)
@@ -34,21 +36,22 @@ export default function CreateStage() {
             }
         })
     }, [])
-    
+
 
     // 标题值改变
     // todo: 验证是否有重名标题，有的话给出提示
     function handleChange(e) {
-        setTitle(e.target.value)
-        if (title.length >= 1) {
+        setStageTitle(e.target.value);
+        console.log("title:" + stageTitle);
+        if (stageTitle.length >= 1) {
             setTitleError('')
         }
-        console.log(title)
+        setWordsCount(countWords(e.target.value, stageContent));
     }
 
     // 验证标题是否为空
     function titleValidated() {
-        if (title.length < 1) {
+        if (stageTitle.length < 1) {
             setTitleError("标题不能为空")
             return false
         } else {
@@ -59,8 +62,8 @@ export default function CreateStage() {
 
     // 验证内容
     function contentValidated() {
-        console.log(dataStage);
-        if (dataStage.blocks.length < 1) {
+        console.log(stageContent);
+        if (stageContent.blocks.length < 1) {
             setContentError("内容为空。如果你是从别的地方复制过来的内容，请在编辑器中做些修改，这样编辑器才能获取到内容。")
             return false
         }
@@ -70,7 +73,11 @@ export default function CreateStage() {
     // 提交
     const postStage = () => {
         if (titleValidated() && contentValidated()) {
-            post('api/stages/', { "title": title, "content": dataStage, "owner": storage.getItem('scifanchain_user_id') }, true)
+            post('api/stages/', {
+                "title": stageTitle,
+                "content": stageContent,
+                "owner": storage.getItem('scifanchain_user_id')
+            }, true)
                 .then(function (response) {
                     console.log(response);
                 })
@@ -85,17 +92,18 @@ export default function CreateStage() {
         <Grid>
             <Grid.Row>
                 <Grid.Column width={12}>
+                    <p className='font-small'> <Icon name='buysellads' /> {wordsCount} 字</p>
                     <div className='editor-wrap'>
-                        <Input fluid placeholder='故事标题...' className='stage-title-input' onChange={handleChange} />
+                        <Input fluid placeholder='故事标题...' className='stage-title-input' onChange={handleChange} id='StageTitle'/>
                         <div id='editorjs' className='editor-content'></div>
                         <Button fluid style={{ marginTop: '1rem' }} onClick={postStage}>发表</Button>
                     </div>
                 </Grid.Column>
                 <Grid.Column width={4}>
-                    
+
                 </Grid.Column>
             </Grid.Row>
-           
+
         </Grid>
     )
 }

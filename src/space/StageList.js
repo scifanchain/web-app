@@ -63,7 +63,7 @@ export default function StageList() {
                 }>
                     {stage.title}
                 </List.Header>
-                <p class='title-sub'>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</p>
+                <p className='title-sub'>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</p>
                 <List.Description>{stage.summary}</List.Description>
             </List.Content>
 
