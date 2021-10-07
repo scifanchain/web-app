@@ -174,7 +174,8 @@ export function Main(props) {
               palletRpc: 'poe',
               callable: 'revokeProof',
               inputParams: [digest],
-              paramFields: [true]
+              paramFields: [true],
+              stageId: stage.id
             }}
           />
           <TxButton
@@ -188,7 +189,8 @@ export function Main(props) {
               palletRpc: 'poe',
               callable: 'createProof',
               inputParams: [digest],
-              paramFields: [true]
+              paramFields: [true],
+              stageId: stage.id
             }}
           />
         </div>

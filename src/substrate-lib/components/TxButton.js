@@ -5,6 +5,7 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 
 import { useSubstrate } from '../';
 import utils from '../utils';
+import { put } from '../../utils/Request';
 
 function TxButton({
   accountPair = null,
@@ -60,10 +61,14 @@ function TxButton({
     return fromAcct;
   };
 
-  const txResHandler = ({ status }) =>
-    status.isFinalized
-      ? setStatus(`😉 完成。您的操作已被记录于Block: ${status.asFinalized.toString()}`)
-      : setStatus(`当前交易状态: ${status.type}`);
+  const txResHandler = ({ status }) => {
+    if (status.isFinalized) {
+      setStatus(`😉 完成。您的操作已被记录于Block: ${status.asFinalized.toString()}`)
+    } else {
+      setStatus(`当前交易状态: ${status.type}`);
+    }
+  }
+
 
   const txErrHandler = err =>
     setStatus(`😞 失败: ${err.toString()}`);
@@ -84,7 +89,7 @@ function TxButton({
   const uncheckedSudoTx = async () => {
     const fromAcct = await getFromAcct();
     const txExecute =
-        api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
+      api.tx.sudo.sudoUncheckedWeight(api.tx[palletRpc][callable](...inputParams), 0);
 
     const unsub = txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
@@ -103,6 +108,23 @@ function TxButton({
     const unsub = await txExecute.signAndSend(fromAcct, txResHandler)
       .catch(txErrHandler);
     setUnsub(() => unsub);
+
+    // 更新stage
+    if (attrs.stageId) {
+      put(
+        'works/stage/update/' + attrs.stageId + '/',
+        {
+          "proofed": true,
+        },
+        true
+      ).then(function (response) {
+        console.log(response);
+        console.log('updage success!')
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }
+
   };
 
   const unsignedTx = async () => {
@@ -146,12 +168,12 @@ function TxButton({
     setStatus('Sending...');
 
     (isSudo() && sudoTx()) ||
-    (isUncheckedSudo() && uncheckedSudoTx()) ||
-    (isSigned() && signedTx()) ||
-    (isUnsigned() && unsignedTx()) ||
-    (isQuery() && query()) ||
-    (isRpc() && rpc()) ||
-    (isConstant() && constant());
+      (isUncheckedSudo() && uncheckedSudoTx()) ||
+      (isSigned() && signedTx()) ||
+      (isUnsigned() && unsignedTx()) ||
+      (isQuery() && query()) ||
+      (isRpc() && rpc()) ||
+      (isConstant() && constant());
   };
 
   const transformParams = (paramFields, inputParams, opts = { emptyAsNull: true }) => {
@@ -218,8 +240,8 @@ function TxButton({
       style={style}
       type='submit'
       onClick={transaction}
-      disabled={ disabled || !palletRpc || !callable || !allParamsFilled() ||
-        ((isSudo() || isUncheckedSudo()) && !isSudoer(accountPair)) }
+      disabled={disabled || !palletRpc || !callable || !allParamsFilled() ||
+        ((isSudo() || isUncheckedSudo()) && !isSudoer(accountPair))}
     >
       {label}
     </Button>
@@ -237,11 +259,11 @@ TxButton.propTypes = {
     palletRpc: PropTypes.string,
     callable: PropTypes.string,
     inputParams: PropTypes.array,
-    paramFields: PropTypes.array
+    paramFields: PropTypes.array,
   }).isRequired
 };
 
-function TxGroupButton (props) {
+function TxGroupButton(props) {
   return (
     <Button.Group>
       <TxButton

@@ -72,7 +72,7 @@ function Main () {
           </Grid.Row>
           <Grid.Row>
             <Interactor accountPair={accountPair} />
-            <Events />
+            {/* <Events /> */}
           </Grid.Row>
           <Grid.Row>
             <TemplateModule accountPair={accountPair} />
