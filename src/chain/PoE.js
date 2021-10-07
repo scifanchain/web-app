@@ -175,7 +175,7 @@ export function Main(props) {
               callable: 'revokeProof',
               inputParams: [digest],
               paramFields: [true],
-              stageId: stage.id
+              stageParams: { stageId: stage.id }
             }}
           />
           <TxButton
@@ -190,7 +190,7 @@ export function Main(props) {
               callable: 'createProof',
               inputParams: [digest],
               paramFields: [true],
-              stageId: stage.id
+              stageParams: { stageId: stage.id }
             }}
           />
         </div>

@@ -22,7 +22,7 @@ function TxButton({
   const [unsub, setUnsub] = useState(null);
   const [sudoKey, setSudoKey] = useState(null);
 
-  const { palletRpc, callable, inputParams, paramFields } = attrs;
+  const { palletRpc, callable, inputParams, paramFields, stageParams } = attrs;
 
   const isQuery = () => type === 'QUERY';
   const isSudo = () => type === 'SUDO-TX';
@@ -110,9 +110,9 @@ function TxButton({
     setUnsub(() => unsub);
 
     // 更新stage
-    if (attrs.stageId) {
+    if (stageParams) {
       put(
-        'works/stage/update/' + attrs.stageId + '/',
+        'works/stage/update/' + stageParams.stageId + '/',
         {
           "proofed": true,
         },
