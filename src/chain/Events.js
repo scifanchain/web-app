@@ -5,42 +5,51 @@ import { useSubstrate } from '../substrate-lib';
 
 // Events to be filtered from feed
 const FILTERED_EVENTS = [
-  'system:ExtrinsicSuccess:: (phase={"ApplyExtrinsic":0})',
-  'system:ExtrinsicSuccess:: (phase={"ApplyExtrinsic":1})'
+  'system:extrinsicSuccess::(phase={"applyExtrinsic":0})'
 ];
 
-function Main (props) {
+const eventName = ev => {
+  const level1key = Object.keys(ev)[0];
+  const level2key = Object.keys(ev[level1key])[0];
+  return `${level1key}:${level2key}`;
+};
+
+const eventParams = ev => {
+  const level1key = Object.keys(ev)[0];
+  const level2key = Object.keys(ev[level1key])[0];
+  return JSON.stringify(ev[level1key][level2key]);
+};
+
+function Main(props) {
   const { api } = useSubstrate();
   const [eventFeed, setEventFeed] = useState([]);
 
   useEffect(() => {
     let unsub = null;
+    let keyNum = 0;
     const allEvents = async () => {
       unsub = await api.query.system.events(events => {
         // loop through the Vec<EventRecord>
         events.forEach(record => {
           // extract the phase, event and the event types
           const { event, phase } = record;
-          const types = event.typeDef;
 
           // show what we are busy with
-          const eventName = `${event.section}:${
-            event.method
-          }:: (phase=${phase.toString()})`;
+          const evjson = event.toJSON();
+          const evName = eventName(evjson);
+          const evParams = eventParams(evjson);
+          const evNamePhase = `${evName}::(phase=${phase.toString()})`;
 
-          if (FILTERED_EVENTS.includes(eventName)) return;
-
-          // loop through each of the parameters, displaying the type and data
-          const params = event.data.map(
-            (data, index) => `${types[index].type}: ${data.toString()}`
-          );
+          if (FILTERED_EVENTS.includes(evNamePhase)) return;
 
           setEventFeed(e => [{
+            key: keyNum,
             icon: 'bell',
-            summary: `${eventName}-${e.length}`,
-            extraText: event.meta.documentation.join(', ').toString(),
-            content: params.join(', ')
+            summary: evName,
+            content: evParams
           }, ...e]);
+
+          keyNum += 1;
         });
       });
     };
@@ -60,14 +69,14 @@ function Main (props) {
         color='grey'
         floated='right'
         icon='erase'
-        onClick={ _ => setEventFeed([]) }
+        onClick={_ => setEventFeed([])}
       />
       <Feed style={{ clear: 'both', overflow: 'auto', maxHeight: feedMaxHeight }} events={eventFeed} />
     </Grid.Column>
   );
 }
 
-export default function Events (props) {
+export default function Events(props) {
   const { api } = useSubstrate();
   return api.query && api.query.system && api.query.system.events
     ? <Main {...props} />

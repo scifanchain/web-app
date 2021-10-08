@@ -100,6 +100,7 @@ export function Main(props) {
           <TxButton
             accountPair={accountPair}
             label={'Create Claim'}
+            color={'teal'}
             setStatus={setStatus}
             type='SIGNED-TX'
             disabled={isClaimed() || !digest}
@@ -115,6 +116,7 @@ export function Main(props) {
           <TxButton
             accountPair={accountPair}
             label='Revoke Claim'
+            color={'teal'}
             setStatus={setStatus}
             type='SIGNED-TX'
             disabled={!isClaimed() || owner !== accountPair.address}

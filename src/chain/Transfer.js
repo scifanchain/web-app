@@ -50,6 +50,7 @@ export default function Main (props) {
           <TxButton
             accountPair={accountPair}
             label='Submit'
+            color={'teal'}
             type='SIGNED-TX'
             setStatus={setStatus}
             attrs={{

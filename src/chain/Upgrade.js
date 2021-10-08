@@ -40,6 +40,7 @@ export default function Main (props) {
           <TxButton
             accountPair={accountPair}
             label='Upgrade'
+            color={'teal'}
             type='UNCHECKED-SUDO-TX'
             setStatus={setStatus}
             attrs={{
