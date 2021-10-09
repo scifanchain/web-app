@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { List } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 import config from '../config';
 import { get } from '../utils/Request';
 
-function StageList () {
+function StageList() {
     const [loading, setLoading] = useState(true);
     const [stages, setStages] = useState([])
     const [error, setError] = useState('')
@@ -29,30 +30,32 @@ function StageList () {
     }, [])
 
     const stageList = stages.map((stage) => (
-        <List.Item key={stage.id} as={Link} to={
-            {
-                pathname: '/stage/' + stage.id,
-            }
-        }>
-            {stage.title}
-            <p>{ stage.created}</p>
-            <p>{ stage.owner.username}</p>
-        </List.Item>
+        <div style={{ paddingTop: 1 + 'rem', paddingBottom: 1 + 'rem' }}>
+            <List.Item key={stage.id} as={Link} to={
+                {
+                    pathname: '/stage/' + stage.id,
+                }
+            }>
+                {stage.title}
+
+            </List.Item>
+            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} By <a href={'/space/author/' + stage.owner.id}>{stage.owner.username}</a></p>
+        </div>
     ));
 
-  // history.push({ pathname: "/stage/" + stage.id })
-    
-    return(
+    // history.push({ pathname: "/stage/" + stage.id })
+
+    return (
         <div>
-            { loading &&　
-            <div className="text-center">
-                <div className="spinner-border text-secondary" role="status">
-                    <span className="sr-only">正在加载...</span>
+            {loading &&
+                <div className="text-center">
+                    <div className="spinner-border text-secondary" role="status">
+                        <span className="sr-only">正在加载...</span>
+                    </div>
                 </div>
-            </div>
             }
 
-            {!loading && !error && 
+            {!loading && !error &&
                 <List>{stageList}</List>
             }
         </div>

@@ -3,7 +3,7 @@ import React, { useEffect, useState, createRef } from 'react';
 import { Container, Segment, Grid, Card, Message } from 'semantic-ui-react';
 
 import MenuLeft from './widget/Menus';
-import StageList from './story/StageList';
+import StageList from './works/StageList';
 
 const contextRef = createRef();
 
