@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createRef } from 'react';
 import { Grid, Advertisement, Segment, Button, Label, Header, Image } from 'semantic-ui-react'
+
 import StageList from './story/StageList';
 import List from './author/List';
 

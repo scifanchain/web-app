@@ -7,7 +7,7 @@ import Galaxy from './Galaxy';
 import SignIn from './author/SignIn';
 import SignUp from './author/SignUp';
 import Profile from './author/Profile';
-import Stage from './story/Stage';
+import Stage from './works/Stage';
 import Finance from './chain/Finance';
 import Era from './Era';
 import SpaceHome from './space/Home';

@@ -9,8 +9,6 @@ import { Button, Icon, Rating, Progress, Grid, Popup, Divider } from 'semantic-u
 import { get } from '../utils/Request';
 
 import PoE from '../chain/PoE';
-import { CastCoin } from '../chain/CastCoin';
-
 
 export default function StageDetail() {
     // 接收跳转参数
@@ -80,7 +78,6 @@ export default function StageDetail() {
             {handlePoE &&
                 <Button onClick={cancelPoE}>退出存证</Button>
             }
-            <Button onClick={startPoE}>铸造SFT</Button>
 
             {handlePoE &&
                 <SubstrateContextProvider>
@@ -88,9 +85,7 @@ export default function StageDetail() {
                 </SubstrateContextProvider>
             }
 
-            <CastCoin stage={ stage}/>
-
-            <Divider/>
+            <Divider />
 
             <div className='editor-wrap'>
                 <Grid>
@@ -136,10 +131,10 @@ export default function StageDetail() {
                                 </Grid.Row>
                             </Grid>
                         </Grid.Column>
-                        
+
                         <Grid.Column width={9} textAlign='center'>
                             <Rating />
-                            <span className='font-small' style={{paddingLeft: 1 + 'rem'}}><Icon name='buysellads' />{ stage.words_count }</span>
+                            <span className='font-small' style={{ paddingLeft: 1 + 'rem' }}><Icon name='buysellads' />{stage.words_count}</span>
                         </Grid.Column>
                         <Grid.Column width={2} textAlign='right'>
                             <Button size='tiny' icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>

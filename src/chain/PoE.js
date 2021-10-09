@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Message, Icon, Input, Loader, Dimmer, Segment } from 'semantic-ui-react';
+import { Button, Message, Icon, Input, Loader, Dimmer, Segment, Table } from 'semantic-ui-react';
 
 import { useSubstrate } from '../substrate-lib';
 import { TxButton } from '../substrate-lib/components';
@@ -123,87 +123,148 @@ export function Main(props) {
     }
   );
 
-  return (
-    <Message>
-      <p>
-        通过加密之后的Hash(哈希)值来与链上存证数据比对，以查验当前内容是否在链上存证。
-      </p>
-      <Button onClick={queryPoE} color='teal'>验证内容</Button>
-      {digest && block === 0 &&
-        <Message warning
-          icon='sync'
-          header='本版本的内容没有在链上存证。'
-          content={digest}
-        />
-      }
-      {block !== 0 && digest &&
-        <Message success
-          icon='check circle'
-          header='本版本内容已在链上存证。'
-          content={digest}
-        />
-      }
+  const CastCoin = () => {
+    return (
+      <Table celled>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>统计项</Table.HeaderCell>
+            <Table.HeaderCell>数额</Table.HeaderCell>
+            <Table.HeaderCell>说明方式</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>字数</Table.Cell>
+            <Table.Cell>{stage.words_count}字</Table.Cell>
+            <Table.Cell>每字1个SFT作为基数。</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>成熟度</Table.Cell>
+            <Table.Cell>{stage.maturity}</Table.Cell>
+            <Table.Cell>0%-100%</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>评级</Table.Cell>
+            <Table.Cell>{stage.level}</Table.Cell>
+            <Table.Cell>分为1-5级</Table.Cell>
+          </Table.Row>
+          <Table.Row warning>
+            <Table.Cell>共计</Table.Cell>
+            <Table.Cell>{stage.words_count * stage.maturity / 100 * stage.level}</Table.Cell>
+            <Table.Cell>字数 * 成熟度 * 评级</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Footer>
+          <Table.Row>
+            <Table.HeaderCell colSpan='3'>
+              <TxButton
+                color={'teal'}
+                accountPair={accountPair}
+                label={'铸造SFT'}
+                setStatus={setStatus}
+                type='SIGNED-TX'
+                disabled={!isClaimed()}
+                attrs={{
+                  palletRpc: 'balances',
+                  callable: 'deposit_creating',
+                  inputParams: ['5CznMikiWfdauKFYUkyKcGFr5kPkLuJScu345qPdFKqCzDxu', 1000000000000],
+                  paramFields: [true]
+                }}
+              />
+            </Table.HeaderCell>
+          </Table.Row>
+        </Table.Footer>
+      </Table>
+    )
+  }
 
-      {digest && isClaimed && accountPair.isLocked &&
-        <div>
-          <p>进行链上存证或撤消操作，需要用令牌密码解锁您的令牌（钱包）账号。<br />
-            <span style={{ color: 'orange', fontSize: 1 + 'rem' }}>提醒：令牌密码是生成钱包时所设置的密码，与网站的登录密码不同。</span>
-          </p>
-          <Input type='password' placeholder='令牌密码...' onChange={getPassword} action>
-            <input />
-            <Button type='submit' onClick={unlock} loading={isBusy}>解锁令牌账号</Button>
-          </Input>
-          {unlockError &&
-            <span style={{ marginLeft: 1 + 'rem', color: 'orange', fontSize: 1 + 'rem' }}><Icon name='stop circle' /> {unlockError}</span>
-          }
-        </div>
-      }
-      {!unlockError && !accountPair.isLocked &&
-        <span style={{ color: 'green', fontSize: 1 + 'rem' }}><Icon name='lock open' /> 令牌账号已解锁。</span>
-      }
-      {!accountPair.isLocked &&
-        <div style={{ marginTop: 1 + 'rem' }}>
-          <TxButton
-            accountPair={accountPair}
-            color={'teal'}
-            label='撤消存证'
-            setStatus={setStatus}
-            type='SIGNED-TX'
-            disabled={!isClaimed()}
-            attrs={{
-              palletRpc: 'poe',
-              callable: 'revokeProof',
-              inputParams: [digest],
-              paramFields: [true],
-              stageParams: { stageId: stage.id }
-            }}
+  return (
+    <div style={{marginTop: 1 + 'rem'}}>
+      <Message>
+        <p>
+          通过加密之后的Hash(哈希)值来与区块链上存证数据比对，以查验当前内容是否已在链上存证。
+        </p>
+        <Button onClick={queryPoE} color='teal'>验证内容</Button>
+        {digest && block === 0 &&
+          <Message warning
+            icon='sync'
+            header='本版本的内容没有在链上存证。'
+            content={digest}
           />
-          <TxButton
-            color={'teal'}
-            accountPair={accountPair}
-            label={'提交存证'}
-            setStatus={setStatus}
-            type='SIGNED-TX'
-            disabled={isClaimed()}
-            attrs={{
-              palletRpc: 'poe',
-              callable: 'createProof',
-              inputParams: [digest],
-              paramFields: [true],
-              stageParams: { stageId: stage.id }
-            }}
+        }
+        {block !== 0 && digest &&
+          <Message success
+            icon='check circle'
+            header='本版本内容已在链上存证。'
+            content={digest}
           />
-        </div>
-      }
-      {status &&
-        <Message positive>
-          <Message.Header></Message.Header>
-          <p>
-            {status}
-          </p>
-        </Message>
-      }
-    </Message>
+        }
+
+        {digest && isClaimed && accountPair.isLocked &&
+          <div>
+            <p>进行链上存证或撤消操作，需要用令牌密码解锁您的令牌（钱包）账号。<br />
+              <span style={{ color: 'orange', fontSize: 1 + 'rem' }}>提醒：令牌密码是生成钱包时所设置的密码，与网站的登录密码不同。</span>
+            </p>
+            <Input type='password' placeholder='令牌密码...' onChange={getPassword} action>
+              <input />
+              <Button type='submit' onClick={unlock} loading={isBusy}>解锁令牌账号</Button>
+            </Input>
+            {unlockError &&
+              <span style={{ marginLeft: 1 + 'rem', color: 'orange', fontSize: 1 + 'rem' }}><Icon name='stop circle' /> {unlockError}</span>
+            }
+          </div>
+        }
+        {!unlockError && !accountPair.isLocked &&
+          <span style={{ color: 'green', fontSize: 1 + 'rem' }}><Icon name='lock open' /> 令牌账号已解锁。</span>
+        }
+        {!accountPair.isLocked &&
+          <div style={{ marginTop: 1 + 'rem' }}>
+            <TxButton
+              accountPair={accountPair}
+              color={'teal'}
+              label='撤消存证'
+              setStatus={setStatus}
+              type='SIGNED-TX'
+              disabled={!isClaimed()}
+              attrs={{
+                palletRpc: 'poe',
+                callable: 'revokeProof',
+                inputParams: [digest],
+                paramFields: [true],
+                stageParams: { stageId: stage.id }
+              }}
+            />
+            <TxButton
+              color={'teal'}
+              accountPair={accountPair}
+              label={'提交存证'}
+              setStatus={setStatus}
+              type='SIGNED-TX'
+              disabled={isClaimed()}
+              attrs={{
+                palletRpc: 'poe',
+                callable: 'createProof',
+                inputParams: [digest],
+                paramFields: [true],
+                stageParams: { stageId: stage.id }
+              }}
+            />
+          </div>
+        }
+        {status &&
+          <Message positive>
+            <Message.Header></Message.Header>
+            <p>
+              {status}
+            </p>
+          </Message>
+        }
+      </Message>
+      {/* {!accountPair.isLocked &&
+        <CastCoin />
+      } */}
+    </div>
   )
 }
 

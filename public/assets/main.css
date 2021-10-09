@@ -28,7 +28,7 @@ body {
   text-align: center;
 }
 .stage-title-input {
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 .editor-wrap {
   background-color: #f5f5f5;
@@ -50,6 +50,8 @@ body {
     text-align: justify;
     text-justify: inter-word;
 }
+
+#MaturityDuration { padding: 0}
 
 
 /* Avatar
