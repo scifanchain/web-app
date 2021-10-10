@@ -7,22 +7,21 @@ export default function Footer() {
     const handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
     return (
-        <Container fluid>
-            <Divider />
-            <Menu fluid text>
-                <Menu.Item header>&copy; 赛凡网络 2021</Menu.Item>
+        <Container fluid style={{backgroundColor: '#000'}}>
+            <Menu fluid text inverted>
+                <Menu.Item>&copy; 赛凡网络 2021</Menu.Item>
                 <Menu.Item
                     name='closest'
                     active={activeItem === 'closest'}
                     content="白皮书"
                     onClick={handleItemClick}
                 />
-                <Menu.Item
+                {/* <Menu.Item
                     name='mostComments'
                     active={activeItem === 'mostComments'}
                     content="用户手册"
                     onClick={handleItemClick}
-                />
+                /> */}
                 <Menu.Item
                     name='mostPopular'
                     active={activeItem === 'mostPopular'}

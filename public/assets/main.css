@@ -30,6 +30,12 @@ body {
   margin-bottom: 2rem;
 }
 
+.home-text {
+  line-height: 2.4rem;
+  background: none !important;
+  text-align:justify;
+}
+
 /* 前端创作编辑器
 -------------------------------------------------- */
 .stage-title {
