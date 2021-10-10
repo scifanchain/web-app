@@ -18,7 +18,7 @@ export default function AuthorList() {
     }, []);
 
     const authorListItem = authors.map((author) => (
-        <Table.Row>
+        <Table.Row key={author.id}>
             <Table.Cell>
                 <Header as='h4' image>
                     {/* <Image src='https://react.semantic-ui.com/images/avatar/small/lena.png' rounded size='mini' /> */}

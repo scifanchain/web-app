@@ -3,6 +3,7 @@ import { Grid, Advertisement, Segment, Button, Label, Header, Image } from 'sema
 
 import StageList from './StageList';
 import AuthorList from '../author/AuthorList';
+import { StagePersonListWidget, StagePlaceListWidget, StageEventListWidget, StageConceptListWidget } from './Widget';
 
 const contextRef = createRef();
 
@@ -12,56 +13,10 @@ function WorksHome() {
         <Grid>
             <Grid.Row>
                 <Grid.Column width={3}>
-                    <Segment.Group>
-                        <Segment secondary key='mini' size='mini'>
-                            <Button
-                                compact
-                                size='small'
-                                floated='right'
-                                onClick={() => dispatch({ type: 'clearLog' })}
-                            >
-                                换一批
-                            </Button>
-                            人物 <Label circular>{200}</Label>
-                        </Segment>
-                        <Segment>
-                            帕梅拉
-                        </Segment>
-                    </Segment.Group>
-
-                    <Segment.Group>
-                        <Segment secondary>
-                            <Button
-                                compact
-                                size='small'
-                                floated='right'
-                                onClick={() => dispatch({ type: 'clearLog' })}
-                            >
-                                换一批
-                            </Button>
-                            地点 <Label circular>{200}</Label>
-                        </Segment>
-                        <Segment >
-                            帕梅拉
-                        </Segment>
-                    </Segment.Group>
-
-                    <Segment.Group>
-                        <Segment secondary>
-                            <Button
-                                compact
-                                size='small'
-                                floated='right'
-                                onClick={() => dispatch({ type: 'clearLog' })}
-                            >
-                                换一批
-                            </Button>
-                            纪元 <Label circular>{200}</Label>
-                        </Segment>
-                        <Segment >
-                            帕梅拉
-                        </Segment>
-                    </Segment.Group>
+                    <StagePersonListWidget/>
+                    <StagePlaceListWidget/>
+                    <StageEventListWidget/>
+                    <StageConceptListWidget/>
                 </Grid.Column>
                 <Grid.Column width={10}>
                     <Advertisement unit='panorama' test='无论是一个有想象力的创意，还是一篇科幻故事，都可以在以区块链为主导的Web3.0时代彰显其从前被忽视的价值。'

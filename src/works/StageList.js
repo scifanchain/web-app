@@ -30,20 +30,17 @@ function StageList() {
     }, [])
 
     const stageList = stages.map((stage) => (
-        <div style={{ paddingTop: 1 + 'rem', paddingBottom: 1 + 'rem' }}>
-            <List.Item key={stage.id} as={Link} to={
+        <div key={stage.id} style={{ paddingTop: 1 + 'rem', paddingBottom: 1 + 'rem' }}>
+            <List.Item  as={Link} to={
                 {
                     pathname: '/stage/' + stage.id,
                 }
             }>
                 {stage.title}
-
             </List.Item>
-            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} By <a href={'/space/author/' + stage.owner.id}>{stage.owner.username}</a></p>
+            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} By <a href={'/author/' + stage.owner.id}>{stage.owner.username}</a></p>
         </div>
     ));
-
-    // history.push({ pathname: "/stage/" + stage.id })
 
     return (
         <div>
