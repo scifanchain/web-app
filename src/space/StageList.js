@@ -5,8 +5,14 @@ import moment from 'moment';
 import { Button, List, Icon, Pagination } from 'semantic-ui-react';
 import { get } from '../utils/Request';
 
+import { useRecoilState } from 'recoil';
+import { usernameState } from '../StateManager';
 
-export default function StageList() {
+
+export default function StageList(props) {
+    const { currentUser } = props;
+    const [username, setUsername] = useRecoilState(usernameState)
+
     const [loading, setLoading] = useState(true);
     const [stages, setStages] = useState([])
     const [error, setError] = useState('')
@@ -48,12 +54,14 @@ export default function StageList() {
     const stageList = stages.map((stage) => (
         <List.Item key={stage.id}>
             <List.Content floated='right'>
-                <Button size='mini' animated='vertical' as={Link} to={{pathname: '/space/stage/edit/' + stage.id}}>
-                    <Button.Content hidden>编辑</Button.Content>
-                    <Button.Content visible>
-                        <Icon name='write square' />
-                    </Button.Content>
-                </Button>
+                {currentUser === username &&
+                    <Button size='mini' animated='vertical' as={Link} to={{ pathname: '/space/stage/edit/' + stage.id }}>
+                        <Button.Content hidden>编辑</Button.Content>
+                        <Button.Content visible>
+                            <Icon name='write square' />
+                        </Button.Content>
+                    </Button>
+                }
             </List.Content>
             <List.Content>
                 <List.Header as={Link} to={
@@ -71,7 +79,7 @@ export default function StageList() {
     ));
 
     return (
-        <div>
+        <div style={{ paddingTop: 1 + 'rem' }}>
             {loading &&
                 <div className="text-center">
                     <div className="spinner-border text-secondary" role="status">

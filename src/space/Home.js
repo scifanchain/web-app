@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createRef, createContext } from 'react';
 import { Switch, Route, Link, useParams } from 'react-router-dom';
-import { Grid, List, Button, Menu, Image, Container } from 'semantic-ui-react';
+import { Grid, List, Button, Menu, Image, Container, Segment, Header } from 'semantic-ui-react';
 
 import { useRecoilState } from 'recoil';
 import { usernameState } from '../StateManager';
@@ -16,42 +16,11 @@ import EditStage from './EditStage';
 import StageList from './StageList';
 import StageDetail from './StageDetail';
 
+import Page404 from '../utils/Page404';
+
 // 本地存储
 const storage = window.localStorage;
 export const AuthorContext = createContext();
-
-export function SpaceMenu() {
-
-    
-
-    const [activeItem, setActiveItem] = useState('home');
-    const handleItemClick = (e, { name }) => setActiveItem(name);
-
-    return (
-        <Menu text vertical className='menu-avatar'>
-            {/* <Menu.Item as={Link} to='/space'
-                name='我的空间'
-                active={activeItem === '我的空间'}
-                onClick={handleItemClick}
-            /> */}
-            <Menu.Item as={Link} to='/space/profile'
-                name='个人资料'
-                active={activeItem === '个人资料'}
-                onClick={handleItemClick}
-            />
-            <Menu.Item as={Link} to='/space/works'
-                name='作品列表'
-                active={activeItem === '作品列表'}
-                onClick={handleItemClick}
-            />
-            <Menu.Item as={Link} to='/space/wallet'
-                name='钱包地址'
-                active={activeItem === '钱包地址'}
-                onClick={handleItemClick}
-            />
-        </Menu>
-    )
-}
 
 function changeAvatar() {
     get(config.API_URL + 'authors/change_avatar/', {}, true)
@@ -68,34 +37,88 @@ function changeAvatar() {
         })
 }
 
-
 export default function SpaceHome() {
-
     // 同步用户状态
     const [username, setUsername] = useRecoilState(usernameState)
+    const [currentUser, setCurrentUser] = useState('')
+    const [author, setAuthor] = useState({})
+    const [isHome, setIsHome] = useState(true)
+    const [page404, setPage404] = useState(false)
+
+    const [activeItem, setActiveItem] = useState('home');
+    const handleItemClick = (e, { name }) => {
+        setActiveItem(name);
+        setIsHome(false)
+    };
+
+    const params = useParams();
+
+    useEffect(() => {
+        if (params.username) {
+            setCurrentUser(params.username);
+        }
+        else {
+            setCurrentUser(username);
+        }
+        get('api/users/' + currentUser, {}, true)
+            .then((res) => {
+                setAuthor(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                setPage404(true);
+            })
+    }, [currentUser])
 
     return (
         <Container fluid>
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column textAlign='center' width={3}>
-                        <Image src={config.API_URL + 'media/avatars/2021/' + username +'.svg'} size='small' centered id='Avatar'/>
-                        <Button size='tiny' onClick={changeAvatar} style={{margin: '1rem'}}>换头像</Button>
-                        <SpaceMenu />
-                    </Grid.Column>
-                    <Grid.Column width={10}>
-                        <Switch>
-                            <Route path='/space/profile' component={Profile} />
-                            <Route path='/space/works' component={Works} />
-                            <Route path='/space/wallet' component={Wallet} />
-                            <Route path='/space/stages' component={StageList} />
-                            <Route path='/space/stage/create' component={CreateStage} />
-                            <Route path='/space/stage/edit/:stage_id' component={EditStage} />
-                            <Route path='/space/stage/:stage_id' component={StageDetail} />
-                        </Switch>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            {page404 &&
+                <Page404 />
+            }
+            {!page404 &&
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center' width={3}>
+                            <Image src={config.API_URL + 'media/avatars/2021/' + currentUser + '.svg'} size='small' centered id='Avatar' />
+                            {currentUser === username &&
+                                <Button size='tiny' onClick={changeAvatar} style={{ margin: '1rem' }}>换头像</Button>
+                            }
+                            <Header as={'h5'}>{author.username}</Header>
+                            <Menu text vertical className='menu-avatar'>
+                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/works', state: { currentUser: currentUser } }}
+                                    name='作品列表'
+                                    active={activeItem === '作品列表'}
+                                    onClick={handleItemClick}
+                                />
+                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/profile', state: { currentUser: currentUser } }}
+                                    name='个人资料'
+                                    active={activeItem === '个人资料'}
+                                    onClick={handleItemClick}
+                                />
+                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/wallet', state: { currentUser: currentUser } }}
+                                    name='钱包地址'
+                                    active={activeItem === '钱包地址'}
+                                    onClick={handleItemClick}
+                                />
+                            </Menu>
+                        </Grid.Column>
+                        <Grid.Column width={10}>
+                            {/* {isHome &&
+                                <Header as={'h3'}>最新动态</Header>
+                            } */}
+                            <Switch>
+                                <Route path='/space/stage/create' component={CreateStage} />
+                                <Route path='/space/stage/edit/:stage_id' component={EditStage} />
+                                <Route path='/space/stage/:stage_id' component={StageDetail} />
+                                <Route path='/:username/profile' component={Profile} />
+                                <Route path='/:username/wallet' component={Wallet} />
+                                <Route path='/:username/works' component={Works} />
+                                <Route path='/:username' component={Works} />
+                            </Switch>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            }
         </Container>
     )
 }

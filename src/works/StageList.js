@@ -37,10 +37,11 @@ function StageList() {
             }>
                 {stage.title}
             </List.Item>
-            <List.Item as={Link} to={{pathname: '/space/' + stage.owner.username}}>
+           
+            <span>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</span>
+            <List.Item as={Link} to={{ pathname: '/' + stage.owner.username, state: { currentUser: stage.owner.username} }}>
                 {stage.owner.username}
             </List.Item>
-            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} <a href={'/space/' + stage.owner.username}>{stage.owner.username}</a></p>
         </div>
     ));
 

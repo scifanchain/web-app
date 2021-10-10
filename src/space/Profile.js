@@ -6,13 +6,14 @@ import moment from 'moment';
 import { get } from '../utils/Request';
 
 
-export default function Profile() {
-    const storage = window.localStorage;
-    const [author, setAuthor] = useState({})
-    const [email, setEmail] = useState('')
+export default function Profile(props) {
+
+    const { currentUser } = props.location.state;
+    const [author, setAuthor] = useState({});
+    const [email, setEmail] = useState('');
 
     useEffect(() => {
-        get('api/users/' + storage.getItem('scifanchain_username'), {}, true)
+        get('api/users/' + currentUser, {}, true)
             .then((res) => {
                 setAuthor(res.data);
                 setEmail(res.data.email);
