@@ -9,7 +9,7 @@ export default function AuthorList() {
     const [authors, setAuthors] = useState([]);
 
     useEffect(() => {
-        get('authors/active_author_list/', {}, true).then(res => {
+        get('authors/active_author_list/').then(res => {
             console.log(res);
             setAuthors(res.data)
         }).catch(function (error) {

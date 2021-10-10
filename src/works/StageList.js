@@ -3,7 +3,6 @@ import { List } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
-import config from '../config';
 import { get } from '../utils/Request';
 
 function StageList() {
@@ -12,7 +11,7 @@ function StageList() {
     const [error, setError] = useState('')
 
     useEffect(() => {
-        get(config.API_URL + 'api/stages/')
+        get('api/stages/', {}, false)
             .then(function (response) {
                 // 处理成功情况
                 setLoading(false)
@@ -38,7 +37,10 @@ function StageList() {
             }>
                 {stage.title}
             </List.Item>
-            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} By <a href={'/author/' + stage.owner.id}>{stage.owner.username}</a></p>
+            <List.Item as={Link} to={{pathname: '/space/' + stage.owner.username}}>
+                {stage.owner.username}
+            </List.Item>
+            <p>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")} <a href={'/space/' + stage.owner.username}>{stage.owner.username}</a></p>
         </div>
     ));
 

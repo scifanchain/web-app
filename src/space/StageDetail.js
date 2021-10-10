@@ -13,6 +13,7 @@ import PoE from '../chain/PoE';
 export default function StageDetail() {
     // 接收跳转参数
     const params = useParams();
+    console.log(params);
 
     const [stage, setStage] = useState({})
     const [stageOwner, setStageOwner] = useState({})

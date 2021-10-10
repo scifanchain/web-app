@@ -31,7 +31,7 @@ export default function Works() {
 
     return (
         <div>
-            <Menu text floated='right'>
+            {/* <Menu text floated='right'>
                 <Menu.Item
                     name='closest'
                     active={activeItem === 'closest'}
@@ -44,7 +44,7 @@ export default function Works() {
                     content='单篇作品'
                     onClick={handleItemClick}
                 />
-            </Menu>
+            </Menu> */}
             <Button as={Link} to={{ pathname: '/space/stage/create' }} style={{ marginBottom: '2rem' }}>开始创作</Button>
             <StageList />
         </div>

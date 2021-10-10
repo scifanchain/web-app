@@ -34,7 +34,6 @@ export default function Content() {
       <Route path='/community' component={Community} />
       <Route path='/expedition' component={Expedition} />
       <Route path='/stage/:stage_id' component={Stage} />
-      <Route path='/author/:author_id' component={Stage} />
       <Route path='/' exact component={Home} />
       {/* <Route path='/test' exact component={Test} /> */}
     </Switch>

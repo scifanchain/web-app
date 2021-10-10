@@ -16,7 +16,7 @@ export default function StageList() {
     const [activePage, setActivePage] = useState(1)
 
     useEffect(() => {
-        get('works/stage_list_by_author/?page=' + activePage)
+        get('works/stage_list_by_author/?page=' + activePage, {}, true)
             .then(function (res) {
                 // 处理成功情况
                 setLoading(false)
@@ -48,7 +48,7 @@ export default function StageList() {
     const stageList = stages.map((stage) => (
         <List.Item key={stage.id}>
             <List.Content floated='right'>
-                <Button size='mini' animated='vertical'>
+                <Button size='mini' animated='vertical' as={Link} to={{pathname: '/space/stage/edit/' + stage.id}}>
                     <Button.Content hidden>编辑</Button.Content>
                     <Button.Content visible>
                         <Icon name='write square' />

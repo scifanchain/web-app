@@ -5,14 +5,19 @@ import config from '../config';
 // 本地存诸
 const storage = window.localStorage;
 // 从本地获取 Token
-const getToken = () => 'Bearer ' + storage.getItem('scifanchain_access_token');
+const getToken = () => {
+    const token = storage.getItem('scifanchain_access_token');
+    if (token) {
+        return 'Bearer ' + token;
+    }
+    return null;
+}
 
 // 创建自定义 axios 实例
 const instance = axios.create({
     timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': getToken()
     }
 })
 
@@ -36,8 +41,8 @@ instance.interceptors.response.use(response => {
             instance({
                 url: 'api/token/refresh/',
                 method: 'post',
-                data: { 'refresh': storage.getItem('scifanchain_refresh_token')}
-            }).then((res) => {       
+                data: { 'refresh': storage.getItem('scifanchain_refresh_token') }
+            }).then((res) => {
                 // 对返回的tokon解码
                 // 将解码后的字符串转为json对象
                 const payload = res.data.access.split('.')[1]
@@ -53,6 +58,7 @@ instance.interceptors.response.use(response => {
                 storage.scifanchain_user_id = payloadJson.user_id;
 
                 config.headers.Authorization = `Bearer ${res.data.access}`
+                
                 // token 刷新后将数组中的方法重新执行
                 console.log(requests)
                 requests.forEach((cb) => cb(res.data.access))
@@ -60,8 +66,8 @@ instance.interceptors.response.use(response => {
                 // window.location.reload()
                 return instance(config)
             }).catch(err => {
-                console.log(err)
-                // window.location.href = "/sign-in/"
+                // console.log(err)
+                window.location.href = "/sign-in/"
             }).finally(() => {
                 isRefreshing = false
             })
@@ -87,13 +93,15 @@ const setHeaderToken = (isNeedToken) => {
     const access_token = isNeedToken ? getToken() : null
     if (isNeedToken) { // api 请求需要携带 access_token 
         if (!access_token) {
-            console.log('不存在 access_token 跳转回登录页')
+            console.log('不存在 access_token 请先登录。')
         }
-        instance.defaults.headers.common.Authorization = access_token //注意：此处的 access_token 包含有Bearer
+        else {
+            instance.defaults.headers.common.Authorization = access_token //注意：此处的 access_token 包含有Bearer
+        }
     }
 }
 
-// 多数get类型的 api 并不需要用户授权使用，则无需携带 access_token；默认不携带，需要则设置第三个参数为 true
+// 多数get类型的 api 不需要用户授权使用，无需携带 access_token；
 export const get = (url, params = {}, isNeedToken = false) => {
     setHeaderToken(isNeedToken)
     return instance({

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createRef, createContext } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route, Link, useParams } from 'react-router-dom';
 import { Grid, List, Button, Menu, Image, Container } from 'semantic-ui-react';
 
 import { useRecoilState } from 'recoil';
@@ -21,6 +21,9 @@ const storage = window.localStorage;
 export const AuthorContext = createContext();
 
 export function SpaceMenu() {
+
+    
+
     const [activeItem, setActiveItem] = useState('home');
     const handleItemClick = (e, { name }) => setActiveItem(name);
 
@@ -37,13 +40,13 @@ export function SpaceMenu() {
                 onClick={handleItemClick}
             />
             <Menu.Item as={Link} to='/space/works'
-                name='我的作品'
-                active={activeItem === '我的作品'}
+                name='作品列表'
+                active={activeItem === '作品列表'}
                 onClick={handleItemClick}
             />
             <Menu.Item as={Link} to='/space/wallet'
-                name='我的钱包'
-                active={activeItem === '我的钱包'}
+                name='钱包地址'
+                active={activeItem === '钱包地址'}
                 onClick={handleItemClick}
             />
         </Menu>
@@ -67,25 +70,9 @@ function changeAvatar() {
 
 
 export default function SpaceHome() {
-    const [loading, setLoading] = useState(true);
-    const [author, SetAuthor] = useState({})
-    const [stages, SetStages] = useState([])
-    const [error, setError] = useState('')
 
     // 同步用户状态
     const [username, setUsername] = useRecoilState(usernameState)
-
-
-    const stageList = stages.map((stage) => (
-        <List.Item key={stage.id} as={Link} to={
-            {
-                pathname: '/stage/' + stage.id,
-                stage_id: stage.id
-            }
-        }>
-            {stage.title}
-        </List.Item>
-    ));
 
     return (
         <Container fluid>

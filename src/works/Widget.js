@@ -7,16 +7,17 @@ import { get } from '../utils/Request';
 function StagePersonListWidget() {
     const [stagesPerson, setStagesPerson] = useState([])
     const [stagesPersonCount, setStagesPersonCount] = useState(0)
+    const [page, setPage] = useState(1)
 
     useEffect(() => {
-        get('api/stages/?type=3').then(res => {
+        get('api/stages/?type=3&page=' + page).then(res => {
             console.log(res);
             setStagesPerson(res.data.results);
             setStagesPersonCount(res.data.count);
         }).catch(error => {
             console.log(error)
         });
-    }, [])
+    }, [page,])
 
     const stagesPersonList = stagesPerson.map((stage) => (
         <List.Item key={stage.id} as={Link} to={
@@ -28,6 +29,10 @@ function StagePersonListWidget() {
         </List.Item>
     ));
 
+    const updateList = () => {
+        setPage(page + 1)
+    }
+
     return (
         <Segment.Group>
             <Segment secondary key='mini' size='mini'>
@@ -35,7 +40,7 @@ function StagePersonListWidget() {
                     compact
                     size='small'
                     floated='right'
-                    onClick={() => dispatch({ type: 'clearLog' })}
+                    onClick={updateList}
                 >
                     换一批
                 </Button>
