@@ -13,6 +13,9 @@ function Home() {
       <Container style={{ width: '70%' }}>
         <Grid divided='vertically' verticalAlign='middle'>
           <Advertisement inverted centered id='HomeAD'>
+            <Header as='h3' textAlign='center' inverted style={{marginTop: 12 + 'rem'}}>
+              银河星旋的探索者们已经启程，他们在星球文明之间穿梭，在语言间徜徉，体验时间、梦和生命的欢畅。
+            </Header>
           </Advertisement>
 
           <Grid.Row centered>
@@ -21,7 +24,6 @@ function Home() {
           </Grid.Row>
 
           <Grid.Row columns={2}>
-
             <Grid.Column>
               <Segment inverted size='large' className='home-text'>
                 SciFanChain是一个专注于科幻创意产业的应用区块链。Sci-Fan-Chain分别代表科学、幻想和区块链。赛凡的概念是重塑科幻产业的生产关系，使科幻产业价值创造更加高效，分配更加合理公平。其核心目标是捕获科幻产业的价值，充分利用新思维、新技术、新生态建设模式，让创作者、读者、投资者、传播者和运营商以更富创造力的方式进行合作，推动科幻产业的快速发展。
@@ -59,7 +61,6 @@ function Home() {
                 赛凡链上的每一部作品都具有独特的价值。在作品的线上创作过程中融合了多种技术，它们都构成了作品的基因，使其意义远远超出了作品本身的内容。
                 Scifan chain使用人工创建来代替算法挖掘。我们坚信，语言、科学和艺术、想象力和思维，以及星光灿烂的宇宙都是有价值的，创造者可以将它们挖掘出来，而算法对此无能为力。赛凡链的通证基于人类的创造力和劳动，围绕创作过程设计了一系列算法和协议，以合理表达作品在不同阶段的价值。简言之，我们使用字数作为参考来表示作品的数量价值，而作品的质量价值则通过等级和成熟度来表示，定量值由程序统计给出，质量值由社区通过投票进行评选。
               </Segment>
-
             </Grid.Column>
             <Grid.Column>
               <Image src='/images/DNA.svg' />
@@ -86,7 +87,7 @@ function Home() {
               <Grid.Column>
                 <Image src='/images/unity.jpg' circular />
                 <Segment inverted>
-                  Unity, 创始人、独立开发者、科幻小说作者，负责应用层和客户端开发。
+                  Unity, 创始人、独立开发者、科幻小说作者，应用层和客户端开发。
                 </Segment>
               </Grid.Column>
               <Grid.Column>
@@ -98,22 +99,49 @@ function Home() {
               <Grid.Column>
                 <Image src='/images/lixing.jpg' circular />
                 <Segment inverted>
-                  April, 创意文案，负责组织和推广社区活动。。
+                  April, 管理运营，社区活动组织与推广。
                 </Segment>
               </Grid.Column>
               <Grid.Column>
                 <Image src='/images/stven.jpg' circular />
                 <Segment inverted>
-                  Stevenyin, 拥有丰富开发经验，多年来一直深入从事区块链技术开发。
+                  Stevenyin, 拥有丰富开发经验，区块链技术开发。
                 </Segment>
               </Grid.Column>
               <Grid.Column>
                 <Image src='/images/moon.jpg' circular />
                 <Segment inverted>
-                  Moon，多年从事项目策划和品牌整合营销，具有较强的策划和市场运作能力。负责品牌策划及市场推广。
+                  Moon，从事项目策划和品牌整合营销，具有较强的策划和市场运作能力。负责品牌策划及市场推广。
                 </Segment>
               </Grid.Column>
             </Grid.Row>
+
+            <Grid.Row centered>
+              <Header as='h1' textAlign='center' inverted>生态伙伴</Header>
+              <br /><br />
+            </Grid.Row>
+
+            <Grid.Row columns={2}>
+              <Grid.Column textAlign='center'>
+                <Image centered
+                  src='/images/octopus_logo_white.png'
+                  as='a'
+                  size='small'
+                  href='http://google.com'
+                  target='_blank'
+                />
+              </Grid.Column>
+              <Grid.Column textAlign='center'>
+                <Image centered
+                  src='/images/logo_near.png'
+                  as='a'
+                  size='small'
+                  href='http://google.com'
+                  target='_blank'
+                />
+              </Grid.Column>
+            </Grid.Row>
+
           </Grid>
         </Grid>
       </Container>

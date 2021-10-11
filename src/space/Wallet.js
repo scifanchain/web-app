@@ -6,9 +6,11 @@ import { DeveloperConsole } from '../substrate-lib/components';
 
 import Account from './Account';
 
-function Main() {
+function Main(props) {
     const [accountAddress, setAccountAddress] = useState(null);
     const { apiState, keyring, keyringState, apiError } = useSubstrate();
+
+    const { currentUser } = props;
 
     const accountPair =
         accountAddress &&
@@ -41,16 +43,17 @@ function Main() {
 
     return (
         <div ref={contextRef}>
-            <Account/>
+            <Account currentUser={currentUser}/>
             <DeveloperConsole />
         </div>
     );
 }
 
-export default function Wallet() {
+export default function Wallet(props) {
+    const { currentUser } = props.location.state;
     return (
         <SubstrateContextProvider>
-            <Main />
+            <Main currentUser={currentUser}/>
         </SubstrateContextProvider>
     );
 }

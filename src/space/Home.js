@@ -60,9 +60,10 @@ export default function SpaceHome() {
         else {
             setCurrentUser(username);
         }
-        get('api/users/' + currentUser, {}, true)
+        get('api/users/' + currentUser)
             .then((res) => {
                 setAuthor(res.data);
+                console.log(res.data.id);
             })
             .catch((error) => {
                 console.log(error);
@@ -85,17 +86,17 @@ export default function SpaceHome() {
                             }
                             <Header as={'h5'}>{author.username}</Header>
                             <Menu text vertical className='menu-avatar'>
-                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/works', state: { currentUser: currentUser } }}
+                                <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/works', state: { currentUserid: '21' } }}
                                     name='作品列表'
                                     active={activeItem === '作品列表'}
                                     onClick={handleItemClick}
                                 />
-                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/profile', state: { currentUser: currentUser } }}
+                                <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/profile', state: { currentUser: currentUser } }}
                                     name='个人资料'
                                     active={activeItem === '个人资料'}
                                     onClick={handleItemClick}
                                 />
-                            <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/wallet', state: { currentUser: currentUser } }}
+                                <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/wallet', state: { currentUser: currentUser } }}
                                     name='钱包地址'
                                     active={activeItem === '钱包地址'}
                                     onClick={handleItemClick}

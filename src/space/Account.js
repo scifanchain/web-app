@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Icon, Message, Modal, Header, Table, Card, Input, Container, Form } from 'semantic-ui-react'
+import { Button, Icon, Message, Modal, Header, Table, Card, Input, Container, Form, Divider, Segment } from 'semantic-ui-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useHistory } from 'react-router-dom';
 
@@ -16,9 +16,9 @@ import { get, post } from '../utils/Request';
 // 本地存诸
 const storage = window.localStorage;
 
-function Main() {
+export default function Main(props) {
+    const { currentUser } = props;
     const { api, keyring } = useSubstrate();
-
     const history = useHistory();
 
     const [mnemonic, setMnemonic] = useState('')
@@ -142,7 +142,7 @@ function Main() {
     };
 
     useEffect(() => {
-        get('authors/my_wallets/' + storage.getItem('scifanchain_user_id') + '/', {}, true)
+        get('authors/wallets/' + currentUser + '/', {}, true)
             .then((res) => {
                 console.log(res)
                 if (res.data.address) {
@@ -397,7 +397,20 @@ function Main() {
 
     return (
         <div>
-            {!hasAddress && !mnemonic && !address &&
+            {!hasAddress && !mnemonic && !address && currentUser !== storage.getItem('scifanchain_user_id') &&
+                <Container fluid>
+                    <Segment basic>
+                        <Header as='h3'>
+                            当前用户还没有生成钱包。
+                        </Header>
+                        <Divider />
+                        <p>用户注册后需要手动手成赛凡链令牌和钱包地址。</p>
+                        <p>只有拥有链上令牌才可以铸造作品NFT。</p>
+                    </Segment>
+
+                </Container>
+            }
+            {!hasAddress && !mnemonic && !address && currentUser === storage.getItem('scifanchain_user_id') &&
                 <div style={{ paddingTop: 1 + 'em' }}>
                     <Container fluid>
                         <Header as='h2'>您还没有赛凡链钱包， 现在来生成吧！</Header>
@@ -466,8 +479,4 @@ function Main() {
             <ModalLogin />
         </div>
     )
-}
-
-export default function Address() {
-    return <Main />
 }

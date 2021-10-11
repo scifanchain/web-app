@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 
 import { useRecoilState } from 'recoil';
-import { usernameState, mnemonicState } from '../StateManager';
+import { usernameState } from '../StateManager';
 
 import { useHistory } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ export function Main() {
   const storage = window.localStorage;
 
   // 用户登录相关组件
-  const [usernameGlobal, setUsernameGlobal] = useRecoilState(usernameState);
+  const [username, setUsername] = useRecoilState(usernameState)
 
   // 页面跳转
   const history = useHistory();
@@ -171,9 +171,9 @@ export function Main() {
         axios.defaults.headers.common.Authorization = "Bearer " + res.data.tokens.access;
 
         // 同步用户全局状态
-        setUsernameGlobal(res.data.username);
+        setUsername(res.data.username);
 
-        history.push('/space/profile');
+        history.push('/'+ username + '/works');
       }
       else {
         console.log(res.data.error)

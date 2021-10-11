@@ -10,7 +10,9 @@ import StageList from './StageList';
 
 
 export default function Works(props) {
-    const { currentUser } = props.location.state;
+    const { currentUserid } = props.location.state;
+    
+    console.log("good:" + currentUserid);
     const [username, setUsername] = useRecoilState(usernameState)
 
     return (
@@ -32,7 +34,10 @@ export default function Works(props) {
             {currentUser === username &&
                 <Button as={Link} to={{ pathname: '/space/stage/create' }} style={{ marginBottom: '2rem' }}>开始创作</Button>
             }
-            <StageList currentUser={ currentUser}/>
+            <StageList
+                currentUser={currentUser}
+                currentUserId={currentUserId}
+            />
         </div>
     )
 }

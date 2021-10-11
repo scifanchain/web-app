@@ -10,7 +10,10 @@ import { usernameState } from '../StateManager';
 
 
 export default function StageList(props) {
-    const { currentUser } = props;
+    const { currentUser, currentUserId } = props;
+    
+    console.log(currentUser)
+
     const [username, setUsername] = useRecoilState(usernameState)
 
     const [loading, setLoading] = useState(true);
@@ -22,7 +25,7 @@ export default function StageList(props) {
     const [activePage, setActivePage] = useState(1)
 
     useEffect(() => {
-        get('works/stage_list_by_author/?page=' + activePage, {}, true)
+        get('works/stage_list_by_author/' + currentUserId + '/', { page: activePage}, true)
             .then(function (res) {
                 // 处理成功情况
                 setLoading(false)

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Menu, Image, Dropdown } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import { Link, useLocation  } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { useRecoilState } from 'recoil';
 import { usernameState } from './StateManager';
@@ -67,9 +67,9 @@ function Navigation() {
                         text={username} pointing className='link item'>
                         <Dropdown.Menu>
                             {/* <Dropdown.Item as={Link} to='/space/home'>我的空间</Dropdown.Item> */}
-                            <Dropdown.Item as={Link} to='/space/profile'>个人资料</Dropdown.Item>
-                            <Dropdown.Item as={Link} to='/space/works'>我的作品</Dropdown.Item>
-                            <Dropdown.Item as={Link} to='/space/wallet'>我的钱包</Dropdown.Item>
+                        <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/profile', state: { currentUser: username } }}>个人资料</Dropdown.Item>
+                        <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/works', state: { currentUser: username } }}>我的作品</Dropdown.Item>
+                        <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/wallet', state: { currentUser: username } }}>我的钱包</Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={handleLogout}>
                                 退出
