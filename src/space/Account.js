@@ -142,7 +142,8 @@ export default function Main(props) {
     };
 
     useEffect(() => {
-        get('authors/wallets/' + currentUser + '/', {}, true)
+        console.log(currentUser);
+        get('authors/wallets/' + currentUser + '/')
             .then((res) => {
                 console.log(res)
                 if (res.data.address) {
@@ -397,11 +398,11 @@ export default function Main(props) {
 
     return (
         <div>
-            {!hasAddress && !mnemonic && !address && currentUser !== storage.getItem('scifanchain_user_id') &&
+            {!hasAddress && !mnemonic && !address && currentUser !== storage.getItem('scifanchain_username') &&
                 <Container fluid>
                     <Segment basic>
                         <Header as='h3'>
-                            当前用户还没有生成钱包。
+                            当前用户还没有生成钱包
                         </Header>
                         <Divider />
                         <p>用户注册后需要手动手成赛凡链令牌和钱包地址。</p>
@@ -410,7 +411,7 @@ export default function Main(props) {
 
                 </Container>
             }
-            {!hasAddress && !mnemonic && !address && currentUser === storage.getItem('scifanchain_user_id') &&
+            {!hasAddress && !mnemonic && !address && currentUser === storage.getItem('scifanchain_username') &&
                 <div style={{ paddingTop: 1 + 'em' }}>
                     <Container fluid>
                         <Header as='h2'>您还没有赛凡链钱包， 现在来生成吧！</Header>

@@ -81,29 +81,30 @@ export default function CreateStage() {
                     "words_count": wordsCount
                 },
                 true)
-                .then(function (response) {
-                    console.log(response);
+                .then(function (res) {
+                    console.log(res);
+                    history.push({
+                        pathname: '/space/stage/' + res.data.id,
+                    })
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
-            window.location = '/space/works/';
+            // window.location = '/' + storage.getItem('scifanchain_username') + '/works/';
+            
         }
     }
 
     return (
         <Grid>
             <Grid.Row>
-                <Grid.Column width={12}>
+                <Grid.Column>
                     <p className='font-small'> <Icon name='buysellads' /> {wordsCount} 字</p>
                     <div className='editor-wrap'>
                         <Input fluid placeholder='故事标题...' className='stage-title-input' onChange={handleChange} id='StageTitle' />
                         <div id='editorjs' className='editor-content'></div>
                         <Button fluid style={{ marginTop: '1rem' }} onClick={postStage}>发表</Button>
                     </div>
-                </Grid.Column>
-                <Grid.Column width={4}>
-
                 </Grid.Column>
             </Grid.Row>
 

@@ -31,7 +31,7 @@ export default function BlogCategory() {
     ));
 
     return (
-        <Menu pointing vertical>
+        <Menu pointing secondary vertical>
             {categoryList}
         </Menu>
     )

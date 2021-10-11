@@ -4,11 +4,11 @@ import { Link, useParams } from 'react-router-dom';
 import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
 
 import { useRecoilState } from 'recoil';
-import { userIdState } from '../StateManager';
+import { userIdState, usernameState } from '../StateManager';
 
 import EditorJS from '@editorjs/editorjs';
 
-import { Button, Icon, Rating, Progress, Grid, Segment, Divider } from 'semantic-ui-react';
+import { Button, Icon, Rating, Progress, Grid, Segment, Divider, Message } from 'semantic-ui-react';
 import { get, put } from '../utils/Request';
 
 import PoE from '../chain/PoE';
@@ -18,10 +18,12 @@ export default function StageDetail() {
     const params = useParams();
 
     const [userId, setUserId] = useRecoilState(userIdState)
+    const [username, setUsername] = useRecoilState(usernameState)
 
     const [stage, setStage] = useState({})
-    const [stageOwner, setStageOwner] = useState({})
+    const [stageOwnerId, setStageOwnerId] = useState(0)
     const [maturity, setMaturity] = useState(0);
+    const [hasAddress, setHasAddress] = useState(true);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -35,7 +37,8 @@ export default function StageDetail() {
                 setLoading(false);
                 console.log(res.data);
                 setStage(res.data);
-                setStageOwner(res.data.owner);
+                setStageOwnerId(res.data.owner.id);
+                console.log(stageOwnerId);
 
                 // 加载编辑器
                 const editor = new EditorJS({
@@ -56,11 +59,20 @@ export default function StageDetail() {
     }, []);
 
     const startPoE = () => {
-        setHandlePoE(true);
+        // 判断钱包地址是否设置
+        get('authors/wallets/' + username + '/', {}, true)
+            .then((res) => {
+                if (!res.data.address) {
+                    setHasAddress(false);
+                }
+                setHandlePoE(true);
+            })
+        // 
     }
 
     const cancelPoE = () => {
         setHandlePoE(false);
+        setHasAddress(true);
     }
 
     const stageOpeness = () => {
@@ -91,20 +103,32 @@ export default function StageDetail() {
 
     return (
         <div>
-            {stage.owner_id === userId && !handlePoE &&
+            {stageOwnerId == userId && !handlePoE &&
                 <Button onClick={startPoE}>上链存证</Button>
             }
-            {stage.owner_id === userId && handlePoE &&
+            {stageOwnerId == userId && handlePoE &&
                 <Button onClick={cancelPoE}>退出存证</Button>
             }
 
-            {stage.owner_id === userId && handlePoE &&
+            {stageOwnerId == userId && handlePoE && hasAddress &&
                 <SubstrateContextProvider>
                     <PoE stage={stage} />
                 </SubstrateContextProvider>
             }
 
-            {stage.owner_id === userId &&
+            {!hasAddress &&
+                <Message>
+                执行该操作需要解锁赛凡的链上令牌（钱包地址），您好像还没有设置。
+                <br /><br />
+                    <Button as={Link} to={{
+                        pathname: '/' + username + '/wallet', state: { currentUser: username, currentUserId: userId }
+                    }}>
+                        前往设置令牌和钱包地址
+                    </Button>
+                </Message>
+            }
+
+            {stageOwnerId == userId &&
                 <Divider />
             }
 
@@ -158,7 +182,7 @@ export default function StageDetail() {
                             <span className='font-small' style={{ paddingLeft: 1 + 'rem' }}><Icon name='buysellads' />{stage.words_count}</span>
                         </Grid.Column>
                         <Grid.Column width={2} textAlign='right'>
-                            {stage.owner_id === userId &&
+                            {stageOwnerId == userId &&
                                 <Button size='tiny' icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
                                     <Icon name='edit' /> 修改
                                 </Button>

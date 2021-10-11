@@ -16,12 +16,14 @@ import WorksHome from './works/Home';
 import Expedition from './Expedition';
 
 import BlogHome from './blogs/Home';
+import BlogDetail from './blogs/BlogDetail';
 
 export default function Content() {
   return (
     <Switch>
       <Route path='/sign-in' component={SignIn} />
       <Route path='/sign-up' component={SignUp} />
+      <Route path='/blogs/:blog_id' component={BlogDetail} />
       <Route path='/blogs' component={BlogHome} />
       <Route path='/finance' component={Finance} />
       <Route path='/works' component={WorksHome} />

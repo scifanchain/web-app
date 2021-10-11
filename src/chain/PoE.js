@@ -180,7 +180,7 @@ export function Main(props) {
   }
 
   return (
-    <div style={{marginTop: 1 + 'rem'}}>
+    <div style={{ marginTop: 1 + 'rem' }}>
       <Message>
         <p>
           通过加密之后的Hash(哈希)值来与区块链上存证数据比对，以查验当前内容是否已在链上存证。
