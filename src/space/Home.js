@@ -39,16 +39,14 @@ function changeAvatar() {
 
 export default function SpaceHome() {
     // 同步用户状态
-    const [username, setUsername] = useRecoilState(usernameState)
-    const [currentUser, setCurrentUser] = useState('')
-    const [author, setAuthor] = useState({})
-    const [isHome, setIsHome] = useState(true)
-    const [page404, setPage404] = useState(false)
+    const [username, setUsername] = useRecoilState(usernameState);
+    const [currentUser, setCurrentUser] = useState('');
+    const [author, setAuthor] = useState({});
+    const [page404, setPage404] = useState(false);
 
     const [activeItem, setActiveItem] = useState('home');
     const handleItemClick = (e, { name }) => {
         setActiveItem(name);
-        setIsHome(false)
     };
 
     const params = useParams();
@@ -63,7 +61,6 @@ export default function SpaceHome() {
         get('api/users/' + currentUser)
             .then((res) => {
                 setAuthor(res.data);
-                console.log(res.data.id);
             })
             .catch((error) => {
                 console.log(error);
@@ -80,13 +77,15 @@ export default function SpaceHome() {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column textAlign='center' width={3}>
-                            <Image src={config.API_URL + 'media/avatars/2021/' + currentUser + '.svg'} size='small' centered id='Avatar' />
+                            {currentUser &&
+                                <Image src={config.API_URL + 'media/avatars/2021/' + currentUser + '.svg'} size='small' centered id='Avatar' />
+                            }
                             {currentUser === username &&
                                 <Button size='tiny' onClick={changeAvatar} style={{ margin: '1rem' }}>换头像</Button>
                             }
                             <Header as={'h5'}>{author.username}</Header>
                             <Menu text vertical className='menu-avatar'>
-                                <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/works', state: { currentUserid: '21' } }}
+                                <Menu.Item as={Link} to={{ pathname: '/' + currentUser + '/works', state: { currentUser: currentUser, currentUserId: author.id } }}
                                     name='作品列表'
                                     active={activeItem === '作品列表'}
                                     onClick={handleItemClick}
@@ -104,9 +103,6 @@ export default function SpaceHome() {
                             </Menu>
                         </Grid.Column>
                         <Grid.Column width={10}>
-                            {/* {isHome &&
-                                <Header as={'h3'}>最新动态</Header>
-                            } */}
                             <Switch>
                                 <Route path='/space/stage/create' component={CreateStage} />
                                 <Route path='/space/stage/edit/:stage_id' component={EditStage} />

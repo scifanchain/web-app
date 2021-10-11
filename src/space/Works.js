@@ -10,9 +10,12 @@ import StageList from './StageList';
 
 
 export default function Works(props) {
-    const { currentUserid } = props.location.state;
+    const { currentUser, currentUserId } = props.location.state;
+
+    console.log(props.location.state);
     
-    console.log("good:" + currentUserid);
+    console.log("name:" + currentUser);
+    console.log("good:" + currentUserId);
     const [username, setUsername] = useRecoilState(usernameState)
 
     return (

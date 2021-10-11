@@ -12,8 +12,6 @@ import { usernameState } from '../StateManager';
 export default function StageList(props) {
     const { currentUser, currentUserId } = props;
     
-    console.log(currentUser)
-
     const [username, setUsername] = useRecoilState(usernameState)
 
     const [loading, setLoading] = useState(true);
@@ -77,7 +75,6 @@ export default function StageList(props) {
                 <p className='title-sub'>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</p>
                 <List.Description>{stage.summary}</List.Description>
             </List.Content>
-
         </List.Item>
     ));
 

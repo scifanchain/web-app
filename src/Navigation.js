@@ -4,7 +4,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { Link, useLocation } from 'react-router-dom'
 
 import { useRecoilState } from 'recoil';
-import { usernameState } from './StateManager';
+import { usernameState, userIdState } from './StateManager';
 
 import { RemoveAuthorToken } from './utils/Storage';
 import config from './config';
@@ -19,6 +19,7 @@ function Navigation() {
 
     // 同步用户
     const [username, setUsername] = useRecoilState(usernameState);
+    const [userId, setUserId] = useRecoilState(userIdState);
 
     // 用户注销
     const handleLogout = () => {
@@ -67,8 +68,8 @@ function Navigation() {
                         text={username} pointing className='link item'>
                         <Dropdown.Menu>
                             {/* <Dropdown.Item as={Link} to='/space/home'>我的空间</Dropdown.Item> */}
+                        <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/works', state: { currentUser: username, currentUserId: userId} }}>我的作品</Dropdown.Item>
                         <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/profile', state: { currentUser: username } }}>个人资料</Dropdown.Item>
-                        <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/works', state: { currentUser: username } }}>我的作品</Dropdown.Item>
                         <Dropdown.Item as={Link} to={{ pathname: '/' + username + '/wallet', state: { currentUser: username } }}>我的钱包</Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={handleLogout}>

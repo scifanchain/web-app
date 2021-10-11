@@ -3,16 +3,21 @@ import { Link, useParams } from 'react-router-dom';
 
 import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
 
+import { useRecoilState } from 'recoil';
+import { userIdState } from '../StateManager';
+
 import EditorJS from '@editorjs/editorjs';
 
-import { Button, Icon, Rating, Progress, Grid, Popup, Divider } from 'semantic-ui-react';
-import { get } from '../utils/Request';
+import { Button, Icon, Rating, Progress, Grid, Segment, Divider } from 'semantic-ui-react';
+import { get, put } from '../utils/Request';
 
 import PoE from '../chain/PoE';
 
 export default function StageDetail() {
     // 接收跳转参数
     const params = useParams();
+
+    const [userId, setUserId] = useRecoilState(userIdState)
 
     const [stage, setStage] = useState({})
     const [stageOwner, setStageOwner] = useState({})
@@ -70,27 +75,43 @@ export default function StageDetail() {
         }
     }
 
+    const handelRating = () => {
+        put(
+            'works/stage/update/' + params.stage_id + '/',
+            {
+                "stars": stage.stars + 1,
+            },
+            true
+        ).then(function (response) {
+            console.log(response);
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
     return (
         <div>
-            {!handlePoE &&
+            {stage.owner_id === userId && !handlePoE &&
                 <Button onClick={startPoE}>上链存证</Button>
             }
-            {handlePoE &&
+            {stage.owner_id === userId && handlePoE &&
                 <Button onClick={cancelPoE}>退出存证</Button>
             }
 
-            {handlePoE &&
+            {stage.owner_id === userId && handlePoE &&
                 <SubstrateContextProvider>
                     <PoE stage={stage} />
                 </SubstrateContextProvider>
             }
 
-            <Divider />
+            {stage.owner_id === userId &&
+                <Divider />
+            }
 
             <div className='editor-wrap'>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column width={1}>
+                        {/* <Grid.Column width={1}>
                             {(() => {
                                 switch (stage.openess) {
                                     case 'PUBLIC':
@@ -118,8 +139,8 @@ export default function StageDetail() {
                                 }
                             }
                             )()}
-                        </Grid.Column>
-                        <Grid.Column width={4}>
+                        </Grid.Column> */}
+                        <Grid.Column width={5}>
                             <Progress percent={stage.maturity} indicating size='tiny' id='MaturityProgress' />
                             <Grid>
                                 <Grid.Row columns={5} textAlign='center' className='font-small'>
@@ -132,18 +153,23 @@ export default function StageDetail() {
                             </Grid>
                         </Grid.Column>
 
-                        <Grid.Column width={9} textAlign='center'>
-                            <Rating />
+                        <Grid.Column width={9}>
+                            {/* <Rating onClick={handelRating} /><span>{stage.stars}</span> */}
                             <span className='font-small' style={{ paddingLeft: 1 + 'rem' }}><Icon name='buysellads' />{stage.words_count}</span>
                         </Grid.Column>
                         <Grid.Column width={2} textAlign='right'>
-                            <Button size='tiny' icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
-                                <Icon name='edit' /> 修改</Button>
+                            {stage.owner_id === userId &&
+                                <Button size='tiny' icon as={Link} to={'/space/stage/edit/' + params.stage_id} style={{ marginBottom: 1 + 'rem' }}>
+                                    <Icon name='edit' /> 修改
+                                </Button>
+                            }
+
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
 
                 <h2 className='stage-title' id='stageTitle'>{stage.title}</h2>
+                <Segment color='grey'>摘要：{stage.summary}</Segment>
                 <div id="editorjs" className='editor-content'></div>
             </div>
         </div>

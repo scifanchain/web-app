@@ -1,7 +1,7 @@
 import React, { useEffect, useState, render } from 'react';
 import { Switch, Route, Link, useHistory, useParams, Redirect } from 'react-router-dom';
 
-import { Button, Select, Loader, Grid, Form, Message, Input, Divider, Icon } from 'semantic-ui-react';
+import { Button, Select, Loader, Grid, Form, Message, Input, Divider, Icon, TextArea } from 'semantic-ui-react';
 import EditorJS from '@editorjs/editorjs';
 
 import { get, put, post } from '../utils/Request';
@@ -15,7 +15,9 @@ export default function EditStage() {
     // 接收跳转参数
     const params = useParams();
 
+    const [stageOwnerId, setStageOwnerId] = useState(0);
     const [stageTitle, setStageTitle] = useState('');
+    const [stageSummary, setStageSummary] = useState('');
     const [stageContent, setStageContent] = useState({});
     const [stageType, setStageType] = useState(0)
     const [maturity, setMaturity] = useState(0)
@@ -35,7 +37,7 @@ export default function EditStage() {
         { key: 'TYPE_CONCEPT', text: '概念', value: 5 },
     ]
 
-    
+
 
     useEffect(() => {
         get('api/stages/' + params.stage_id + '/', {}, true)
@@ -43,7 +45,9 @@ export default function EditStage() {
                 // 处理成功情况
                 setLoading(false);
                 console.log(res.data);
+                setStageOwnerId(res.data.owner.id);
                 setStageTitle(res.data.title);
+                setStageSummary(res.data.summary);
                 setStageContent(res.data.content);
                 setStageType(res.data.type);
                 setMaturity(res.data.maturity);
@@ -80,12 +84,16 @@ export default function EditStage() {
 
     // 标题值改变
     // todo: 验证是否有重名标题，有的话给出提示
-    function handleChange(e) {
+    function handleChangeTitle(e) {
         setStageTitle(e.target.value)
         if (stageTitle.length >= 1) {
             setTitleError('')
         }
         setWordsCount(countWords(e.target.value, stageContent));
+    }
+
+    function handleChangeSummary(e) {
+        setStageSummary(e.target.value);
     }
 
     // 验证标题是否为空
@@ -116,8 +124,9 @@ export default function EditStage() {
                 'works/stage/update/' + params.stage_id + '/',
                 {
                     "title": stageTitle,
+                    "summary": stageSummary,
                     "content": stageContent,
-                    "owner": storage.getItem('scifanchain_user_id'),
+                    "owner": stageOwnerId,
                     'type': stageType,
                     'maturity': maturity,
                     "words_count": wordsCount
@@ -191,7 +200,11 @@ export default function EditStage() {
                     </Grid.Row>
                 </Grid>
 
-                <Input fluid className='stage-title-input' onChange={handleChange} value={stageTitle} id='StageTitle' />
+                <Input fluid className='stage-title-input' onChange={handleChangeTitle} value={stageTitle} id='StageTitle' />
+                <Form>
+                    <TextArea rows={2} placeholder='摘要内容' onChange={handleChangeSummary} value={stageSummary} />
+                </Form>
+                <br />
                 <div id='editorjs' className='editor-content'></div>
                 <Button fluid style={{ marginTop: '1rem' }} onClick={postStage}>提交修改</Button>
             </div>

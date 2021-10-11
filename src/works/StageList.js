@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List } from 'semantic-ui-react';
+import { List, Divider } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
@@ -29,20 +29,30 @@ function StageList() {
     }, [])
 
     const stageList = stages.map((stage) => (
-        <div key={stage.id} style={{ paddingTop: 1 + 'rem', paddingBottom: 1 + 'rem' }}>
-            <List.Item  as={Link} to={
-                {
-                    pathname: '/stage/' + stage.id,
-                }
-            }>
-                {stage.title}
-            </List.Item>
-           
-            <span>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</span>
-            <List.Item as={Link} to={{ pathname: '/' + stage.owner.username, state: { currentUser: stage.owner.username} }}>
-                {stage.owner.username}
-            </List.Item>
-        </div>
+        <List.Item>
+            <List.Content>
+                <List.Header as={Link} to={
+                    {
+                        pathname: '/space/stage/' + stage.id,
+                    }
+                }>
+                    {stage.title}
+                </List.Header>
+                <p className='title-sub'>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}
+                    <span style={{ paddingLeft: 0.5 + 'rem', paddingRight: 0.5 + 'rem' }}>By</span>
+                    <List.Item as={Link} to={{
+                        pathname: '/' + stage.owner.username,
+                        state: { currentUser: stage.owner.username, currentUserId: stage.owner.id }
+                    }}
+                    >
+                        {stage.owner.username}
+                    </List.Item>
+                </p>
+
+                <List.Description>{stage.summary}</List.Description>
+            </List.Content>
+            <Divider/>
+        </List.Item>
     ));
 
     return (
@@ -56,7 +66,7 @@ function StageList() {
             }
 
             {!loading && !error &&
-                <List>{stageList}</List>
+                <List relaxed>{stageList}</List>
             }
         </div>
     )
