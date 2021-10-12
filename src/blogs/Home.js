@@ -26,7 +26,7 @@ export default function BlogHome() {
                     <Grid.Column width={10}>
                         {/* <BlogList /> */}
                         <Switch>
-                            <Route path='/blogs/category/:blog_id' component={BlogList} />
+                            <Route path='/blogs/category/:category_id' component={BlogList} />
                             <Route path='/blogs/detail/:blog_id' component={BlogDetail} />
                             <Route path='/blogs' component={BlogList} />
                         </Switch>

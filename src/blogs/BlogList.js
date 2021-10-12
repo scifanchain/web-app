@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route, Link, useHistory } from 'react-router-dom';
+import { Switch, Route, Link, useHistory, useParams } from 'react-router-dom';
 import moment from 'moment';
 
 import { Button, List, Icon, Pagination } from 'semantic-ui-react';
@@ -7,6 +7,7 @@ import { get } from '../utils/Request';
 
 
 export default function BlogList() {
+    const params = useParams();
     const [loading, setLoading] = useState(true);
     const [blogs, setBlogs] = useState([])
     const [error, setError] = useState('')
@@ -15,8 +16,10 @@ export default function BlogList() {
     const [prevPage, setPrevPage] = useState(null)
     const [activePage, setActivePage] = useState(1)
 
+    const url = params.category_id ? 'api/blogs/posts/?' + params.category_id : 'api/blogs/posts/';
+
     useEffect(() => {
-        get('api/blogs/posts/')
+        get(url)
             .then(function (res) {
                 // 处理成功情况
                 setLoading(false)
@@ -35,7 +38,7 @@ export default function BlogList() {
                 console.log(error);
             });
         console.log(activePage)
-    }, [activePage,])
+    }, [activePage, url])
 
     // 分页
     const PaginationForBlogList = () => (
@@ -46,7 +49,7 @@ export default function BlogList() {
 
     // 列表
     const blogList = blogs.map((blog) => (
-        <List.Item key={blog.id} style={{paddingTop: 1.5 + 'rem'}}>
+        <List.Item key={blog.id} style={{ paddingTop: 1.5 + 'rem' }}>
             <List.Content>
                 <List.Header as={Link} to={
                     {
@@ -55,7 +58,7 @@ export default function BlogList() {
                 }>
                     {blog.title}
                 </List.Header>
-                <p style={{ paddingTop: 1 + 'rem', color: '#AAA'}}>发布于：{moment(blog.created).format("YYYY年MM月DD日HH时mm分")}</p>
+                <p style={{ paddingTop: 1 + 'rem', color: '#AAA' }}>发布于：{moment(blog.created).format("YYYY年MM月DD日HH时mm分")}</p>
                 <List.Description>{blog.summary}</List.Description>
                 <br />
             </List.Content>
