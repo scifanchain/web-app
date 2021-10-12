@@ -10,6 +10,7 @@ import { get } from '../utils/Request';
 
 import BlogList from './BlogList';
 import BlogCategory from './BlogCategory';
+import BlogDetail from './BlogDetail';
 
 
 export default function BlogHome() {
@@ -23,7 +24,12 @@ export default function BlogHome() {
                         <BlogCategory />
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        <BlogList />
+                        {/* <BlogList /> */}
+                        <Switch>
+                            <Route path='/blogs/category/:blog_id' component={BlogList} />
+                            <Route path='/blogs/detail/:blog_id' component={BlogDetail} />
+                            <Route path='/blogs' component={BlogList} />
+                        </Switch>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

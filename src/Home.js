@@ -12,11 +12,11 @@ function Home() {
     <Container fluid style={{ backgroundColor: '#000' }}>
       <Container style={{ width: '70%' }}>
         <Grid divided='vertically' verticalAlign='middle'>
-          <Advertisement inverted centered id='HomeAD'>
+          <div id='HomeAD'>
             <Header as='h3' textAlign='center' inverted style={{marginTop: 12 + 'rem'}}>
               银河星旋的探索者们已经启程，他们在星球文明之间穿梭，在语言间徜徉，体验时间、梦和生命的欢畅。
             </Header>
-          </Advertisement>
+          </div>
 
           <Grid.Row centered>
             <Header as='h1' textAlign='center' inverted>理念与愿景</Header>

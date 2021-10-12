@@ -1,7 +1,7 @@
 // 本地存储
 const storage = window.localStorage;
 
-export function SaveAuthorToken(username, props) {
+export async function SaveAuthorToken(username, props) {
     const { access, refresh } = props
 
     // 对返回的tokon解码
@@ -14,6 +14,9 @@ export function SaveAuthorToken(username, props) {
     storage.setItem('scifanchain_access_token', access);
     storage.setItem('scifanchain_refresh_token', refresh);
     storage.setItem('scifanchain_expired_time', payloadJson.exp);
+
+    return { userId: payloadJson.user_id, username: username };
+
 }
 
 export function RemoveAuthorToken() {
@@ -38,6 +41,6 @@ export function GetAuthorToken() {
             'exp': storage.getItem('scifanchain_expired_time')
         }
     }
-    
+
     return author_token;
 }

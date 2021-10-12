@@ -6,13 +6,11 @@ import { Button, List, Icon, Pagination } from 'semantic-ui-react';
 import { get } from '../utils/Request';
 
 import { useRecoilState } from 'recoil';
-import { usernameState } from '../StateManager';
+import { usernameState, userIdState } from '../StateManager';
 
 
 export default function StageList(props) {
-
     const { currentUser, currentUserId } = props;
-    
     const [username, setUsername] = useRecoilState(usernameState)
 
     const [loading, setLoading] = useState(true);

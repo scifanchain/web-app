@@ -22,7 +22,8 @@ export default function BlogCategory() {
     }, [])
 
     const categoryList = categories.map((cat) => (
-        <Menu.Item key={cat.id}
+        <Menu.Item as={Link} to={{ pathname: '/blogs/category/' + cat.id }}
+            key={cat.id}
             name={cat.name}
             active={activeItem === cat.name}
             content={cat.name}

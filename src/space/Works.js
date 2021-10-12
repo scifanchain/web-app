@@ -11,9 +11,8 @@ import StageList from './StageList';
 
 export default function Works(props) {
     const { currentUser, currentUserId } = props.location.state;
-
-    const [username, setUsername] = useRecoilState(usernameState)
-
+    const [username, setUsername] = useRecoilState(usernameState);
+    
     return (
         <div>
             {/* <Menu text floated='right'>

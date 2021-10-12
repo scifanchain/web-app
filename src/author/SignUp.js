@@ -7,25 +7,22 @@ import {
   Message,
 } from 'semantic-ui-react';
 
-import axios from 'axios';
-
 import { useRecoilState } from 'recoil';
-import { usernameState } from '../StateManager';
+import { usernameState, userIdState } from '../StateManager';
 
 import { useHistory } from 'react-router-dom';
 
-import { SubstrateContextProvider, useSubstrate } from '../substrate-lib';
-
-import { get, post } from '../utils/Request';
+import { post } from '../utils/Request';
 
 import { SaveAuthorToken } from '../utils/Storage';
 
-export function Main() {
+export default function SignUp() {
   // 本地存储
   const storage = window.localStorage;
 
   // 用户登录相关组件
   const [username, setUsername] = useRecoilState(usernameState)
+  const [userId, setUserId] = useRecoilState(userIdState)
 
   // 页面跳转
   const history = useHistory();
@@ -164,106 +161,92 @@ export function Main() {
       console.log(res)
       if (!res.data.error) {
         // 存储用户令牌
-        SaveAuthorToken(res.data.username, res.data.tokens)
-
-        // 设置axios请求头
-        // 注意Bearer后面需有空格
-        axios.defaults.headers.common.Authorization = "Bearer " + res.data.tokens.access;
-
-        // 同步用户全局状态
-        setUsername(res.data.username);
-
-        history.push('/'+ username + '/works');
+        SaveAuthorToken(res.data.username, res.data.tokens).then((resData) => {
+          // 同步全局用户数据
+          setUsername(resData.username);
+          setUserId(resData.userId);
+          history.push({ pathname: '/' + resData.username + '/works', state: { currentUserId: resData.userId, currentUser: resData.username } });
+        })
       }
       else {
-        console.log(res.data.error)
+        console.log(res.data.error);
+        setValidateUsername(res.data.msg)
       }
-      
-
     }).catch((err) => {
       console.log(err);
     });
 
-   
+
 
   };
 
   return (
-    <SubstrateContextProvider>
-      <Container>
-        <Grid>
-          <Grid.Row>
-            <Grid.Column width={5}></Grid.Column>
-            <Grid.Column width={6}>
-              <Message
-                attached
-                header="开启你的宇宙叙事"
-                content="银河星旋的人类文明高度发达，数百万计的文明星球在璀璨银河生生不息，体现着创造主的荣耀。人类不断探寻宇宙的奥秘，一个又一个里程碑式的重大发现被揭示出来。"
+    <Container>
+      <Grid>
+        <Grid.Row>
+          <Grid.Column width={5}></Grid.Column>
+          <Grid.Column width={6}>
+            <Message
+              attached
+              header="开启你的宇宙叙事"
+              content="银河星旋的人类文明高度发达，数百万计的文明星球在璀璨银河生生不息，体现着创造主的荣耀。人类不断探寻宇宙的奥秘，一个又一个里程碑式的重大发现被揭示出来。"
+            />
+            <Form onSubmit={handleSubmit} className="attached fluid segment">
+              <Form.Input
+                placeholder="用户名"
+                name="username"
+                value={state.username}
+                onChange={handleChange}
               />
-              <Form onSubmit={handleSubmit} className="attached fluid segment">
-                <Form.Input
-                  placeholder="用户名"
-                  name="username"
-                  value={state.username}
-                  onChange={handleChange}
-                />
-                {validate_username !== '' && (
-                  <Message negative>
-                    <p>{validate_username}</p>
-                  </Message>
-                )}
-                <Form.Input
-                  placeholder="邮箱"
-                  name="email"
-                  value={state.email}
-                  onChange={handleChange}
-                />
-                {validate_email !== '' && (
-                  <Message negative>
-                    <p>{validate_email}</p>
-                  </Message>
-                )}
-                <Form.Input
-                  placeholder="密码"
-                  name="password"
-                  value={state.password}
-                  type="password"
-                  onChange={handleChange}
-                />
-                {validate_password !== '' && (
-                  <Message negative>
-                    <p>{validate_password}</p>
-                  </Message>
-                )}
-                <Form.Input
-                  placeholder="重复密码"
-                  name="password_repeat"
-                  value={state.password_repeat}
-                  type="password"
-                  onChange={handleChange}
-                />
-                {validate_password_repeat !== '' && (
-                  <Message negative>
-                    <p>{validate_password_repeat}</p>
-                  </Message>
-                )}
-                <Button fluid className={validated ? 'positive' : 'disabled'}>
-                  提交注册
-                </Button>
-              </Form>
-            </Grid.Column>
-            <Grid.Column width={5}></Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Container>
-    </SubstrateContextProvider>
+              {validate_username !== '' && (
+                <Message negative>
+                  <p>{validate_username}</p>
+                </Message>
+              )}
+              <Form.Input
+                placeholder="邮箱"
+                name="email"
+                value={state.email}
+                onChange={handleChange}
+              />
+              {validate_email !== '' && (
+                <Message negative>
+                  <p>{validate_email}</p>
+                </Message>
+              )}
+              <Form.Input
+                placeholder="密码"
+                name="password"
+                value={state.password}
+                type="password"
+                onChange={handleChange}
+              />
+              {validate_password !== '' && (
+                <Message negative>
+                  <p>{validate_password}</p>
+                </Message>
+              )}
+              <Form.Input
+                placeholder="重复密码"
+                name="password_repeat"
+                value={state.password_repeat}
+                type="password"
+                onChange={handleChange}
+              />
+              {validate_password_repeat !== '' && (
+                <Message negative>
+                  <p>{validate_password_repeat}</p>
+                </Message>
+              )}
+              <Button fluid className={validated ? 'positive' : 'disabled'}>
+                提交注册
+              </Button>
+            </Form>
+          </Grid.Column>
+          <Grid.Column width={5}></Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Container>
   );
 };
 
-export default function SignUp() {
-  return (
-    <SubstrateContextProvider>
-      <Main />
-    </SubstrateContextProvider>
-  );
-}

@@ -46,20 +46,20 @@ export default function BlogList() {
 
     // 列表
     const blogList = blogs.map((blog) => (
-        <List.Item key={blog.id}>
+        <List.Item key={blog.id} style={{paddingTop: 1.5 + 'rem'}}>
             <List.Content>
                 <List.Header as={Link} to={
                     {
-                        pathname: '/blogs/' + blog.id,
+                        pathname: '/blogs/detail/' + blog.id,
                     }
                 }>
                     {blog.title}
                 </List.Header>
                 <p style={{ paddingTop: 1 + 'rem', color: '#AAA'}}>发布于：{moment(blog.created).format("YYYY年MM月DD日HH时mm分")}</p>
                 <List.Description>{blog.summary}</List.Description>
+                <br />
             </List.Content>
         </List.Item>
-        
     ));
 
     return (

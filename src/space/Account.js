@@ -425,7 +425,7 @@ export default function Main(props) {
                     <Message>
                         <Message.Header>请为您的钱包账户设置独立的名称和密码 </Message.Header>
                         <p>
-                            为保障安全，链上钱包账户与您在网站的账户是分别独立设置的，链上钱包账户由链端认证。您在链上的关键性操作如存证、转移Token等，都需要输入钱包密码进行验证，所以请牢记此密码。
+                            为保障安全，链上钱包账户与您在网站的账户是分别独立设置的，链上钱包账户由链端认证。您在链上的关键性操作如作品上链存证、为作品铸造NFT、转移Token等，都需要输入钱包密码进行验证，所以请牢记此密码。
                         </p>
                         <Form>
                             <Form.Group widths='equal'>

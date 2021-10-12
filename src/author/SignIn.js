@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Container, Grid, Form, Message, Icon } from 'semantic-ui-react';
 
 import { useRecoilState } from 'recoil';
-import { usernameState } from '../StateManager';
+import { usernameState, userIdState } from '../StateManager';
 
 import { post } from '../utils/Request';
 
@@ -13,7 +13,8 @@ import { SaveAuthorToken, RemoveAuthorToken } from '../utils/Storage';
 function SignIn() {
     const history = useHistory();
     // 用户登录相关组件
-    const [username, setUsername] = useRecoilState(usernameState)
+    const [username, setUsername] = useRecoilState(usernameState);
+    const [userId, setUserId] = useRecoilState(userIdState);
 
     const [state, setState] = useState({
         username: '',
@@ -41,10 +42,13 @@ function SignIn() {
         post('api/token/', {
             username: state.username,
             password: state.password
-        }).then(res => {
-            setUsername(state.username)
-            SaveAuthorToken(state.username, res.data);
-            history.push('/space/profile');
+        }, false).then(res => {
+            SaveAuthorToken(state.username, res.data).then((resData) => {
+                // 同步全局用户数据
+                setUsername(resData.username);
+                setUserId(resData.userId);
+                history.push({ pathname: '/' + resData.username + '/works', state: { currentUserId: resData.userId, currentUser: resData.username } });
+            });
         }).catch(err => {
             setState({ ...state, dissplay_hidden: false });
             console.log(err);
