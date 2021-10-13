@@ -11,7 +11,7 @@ import { usernameState, userIdState } from '../StateManager';
 
 export default function StageList(props) {
     const { currentUser, currentUserId } = props;
-    const [username, setUsername] = useRecoilState(usernameState)
+    const [username, setUsername] = useRecoilState(usernameState);
 
     const [loading, setLoading] = useState(true);
     const [stages, setStages] = useState([])

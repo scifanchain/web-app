@@ -1,15 +1,21 @@
 import React, { useEffect, useState, createRef } from 'react';
-import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Form, TextArea } from 'semantic-ui-react';
+import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Form, TextArea, Input } from 'semantic-ui-react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 
+import { useRecoilState } from 'recoil';
+import { usernameState, userIdState } from '../StateManager';
+
 import MDEditor from '@uiw/react-md-editor';
 
-import { get } from '../utils/Request';
+import { get, post } from '../utils/Request';
 
 const contextRef = createRef();
 
 function Home() {
+    // 全局用户
+    const [username, setUsername] = useRecoilState(usernameState);
+    const [userId, setUserId] = useRecoilState(userIdState);
     // 频道
     const [activeItem, setActiveItem] = useState(1);
     const [channels, setChannels] = useState([]);
@@ -18,7 +24,7 @@ function Home() {
     // 主题
     const [loadingTopic, setLoadingTopic] = useState(true);
     const [topics, setTopics] = useState([]);
-    const [topicId, setTopicId] = useState(1);
+    const [topicId, setTopicId] = useState(0);
     const [error, setError] = useState('');
     const [countPageTopic, setCountPageTopic] = useState(0);
     const [nextPageTopic, setNextPageTopic] = useState(null);
@@ -26,7 +32,9 @@ function Home() {
     const [activePageTopic, setActivePageTopic] = useState(1);
     const [buttonTopicText, setButtonTopicText] = useState('发表主题');
     const [topicEditorShow, setTopicEditorShow] = useState(false);
-    const [valueTopic, setValueTopic] = useState("");
+    const [valueTopicTitle, setValueTopicTitle] = useState('');
+    const [valueTopicBody, setValueTopicBody] = useState("");
+    const [topUpdated, setTopicUpdated] = useState(false);
 
     // 回复
     const [loadingReply, setLoadingReply] = useState(true);
@@ -35,6 +43,8 @@ function Home() {
     const [buttonReplyText, setButtonReplyText] = useState('发表回复');
     const [replyEditorShow, setReplyEditorShow] = useState(false);
     const [valueReply, setValueReply] = useState("");
+
+    const [replyBody, setReplyBody] = useState('');
 
     useEffect(() => {
         // 获取频道
@@ -55,6 +65,7 @@ function Home() {
                 setPrevPageTopic(res.data.previous);
                 setError('');
                 console.log(res);
+                setFirstTopicId(res.data.results);
             })
             .catch(function (error) {
                 // 处理错误情况
@@ -63,9 +74,39 @@ function Home() {
                 setError('很抱歉，没有获取到数据！');
                 console.log(error);
             });
-    }, [channelId, activePageTopic,]);
+    }, [channelId, activePageTopic, topUpdated,]);
+
+    const getTopicBody = (topic_id) => {
+        // setTopicId(topic_id);
+        // get('api/topics/' + topic_id).then((res) => {
+
+        // })
+        console.log(topic_id)
+
+    }
+
+    // 发布topic
+    const postTopic = () => {
+        post('/api/topics/', { title: valueTopicTitle, topic_body: valueTopicBody, channel: channelId, owner: userId }, true)
+            .then((res) => {
+                console.log(res);
+                showTopicEditor();
+                setValueTopicTitle("");
+                setValueTopicBody("");
+                setTopicUpdated(!topUpdated);
+            }).catch((err) => {
+                console.log(err);
+            })
+    };
+
+    // 获取输入topic的标题
+    function handleTopicTitleChange(e) {
+        setValueTopicTitle(e.target.value);
+        console.log(valueTopicTitle);
+    }
 
     useEffect(() => {
+        // 获取回复
         get('api/replies/?topic_id=' + topicId, { page: activePageReply }, true)
             .then(function (res) {
                 setLoadingReply(false);
@@ -77,7 +118,8 @@ function Home() {
                 setReplies([]);
                 console.log(error)
             });
-    }, [])
+    }, [topicId,]);
+
 
     // 更换频道
     const handleItemClick = (e, { id }) => {
@@ -96,21 +138,29 @@ function Home() {
         />
     ));
 
+    function setFirstTopicId(topics) {
+        for (var k in topics) {
+            if (k == 1) {
+                console.log(k)
+                // setTopicId(topics[k].id);
+                break;
+            } 
+        }
+    }
+
     // 主题列表
-    const topic_list = topics.map((topic) => (
-        <List.Item key={topic.id}>
-            <List.Content>
-                <List.Header as={Link} to={
-                    {
-                        pathname: '/community/topics/' + topic.id,
-                    }
-                }>
-                    {topic.title}
-                </List.Header>
-                <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")}</p>
-            </List.Content>
-        </List.Item>
-    ));
+    const topic_list = topics.map((topic, index) => {
+        return (
+            <List.Item key={topic.id}>
+                <List.Content>
+                    <List.Header as={'a'} onClick={getTopicBody(topic.id)}>
+                        {topic.title}
+                    </List.Header>
+                    <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")}</p>
+                </List.Content>
+            </List.Item>
+        )
+    });
 
     // 主题分页
     const handleTopicPaginationChange = (e, { activePage }) => setActivePageTopic(activePage)
@@ -181,16 +231,16 @@ function Home() {
                     <Grid.Column width={7}>
                         <div>
                             <Button onClick={showTopicEditor}>{buttonTopicText}</Button>
-                            {/* <Input size='small' placeholder='主题名称'/> */}
                             {topicEditorShow &&
                                 <div>
+                                    <Input size='mini' fluid placeholder='主题名称' style={{ marginTop: 0.5 + 'rem' }} onChange={handleTopicTitleChange} />
                                     <MDEditor style={{ marginTop: 0.5 + 'rem', marginBottom: 0.5 + 'rem' }}
-                                        value={valueTopic}
-                                        onChange={setValueTopic}
+                                        value={valueTopicBody}
+                                        onChange={setValueTopicBody}
                                         preview='edit'
                                         height={120}
                                     />
-                                    <Button>提交</Button>
+                                    <Button onClick={postTopic}>提交</Button>
                                 </div>
                             }
 
