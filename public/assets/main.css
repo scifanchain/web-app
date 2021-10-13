@@ -89,3 +89,9 @@ body {
 .font-small {
   font-size: small;
 }
+
+/* Community
+-------------------------------------------------- */
+.channel-menu {
+  font-size: 1.15rem;
+}

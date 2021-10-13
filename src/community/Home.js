@@ -1,24 +1,102 @@
 import React, { useEffect, useState, createRef } from 'react';
-import { Container, Segment, Statistic, Grid, Menu, Feed, Icon } from 'semantic-ui-react';
+import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Input } from 'semantic-ui-react';
+import { Link, useHistory } from 'react-router-dom';
+import moment from 'moment';
+
+import MDEditor from '@uiw/react-md-editor';
 
 import { get } from '../utils/Request';
-
-import TopicList from './TopicList';
 
 const contextRef = createRef();
 
 function Home() {
-    const [activeItem, setActiveItem] = useState('bio');
-    const [topics, setTopics] = useState({});
+    // 频道
+    const [activeItem, setActiveItem] = useState(1);
+    const [channels, setChannels] = useState([]);
+    const [channelId, setChannelId] = useState(1);
+
+    // 主题
+    const [loading, setLoading] = useState(true);
+    const [topics, setTopics] = useState([])
+    const [error, setError] = useState('')
+    const [countPageTopic, setCountPageTopic] = useState(0)
+    const [nextPageTopic, setNextPageTopic] = useState(null)
+    const [prevPageTopic, setPrevPageTopic] = useState(null)
+    const [activePageTopic, setActivePageTopic] = useState(1)
+    const [buttonText, setButtonText] = useState('发表主题')
+    const [topicEditorShow, setTopicEditorShow] = useState(false)
+    const [value, setValue] = useState("");
 
     useEffect(() => {
-        get('api/topics/').then((res) => {
-            console.log(res);
-            setTopics(res.data.results);
-        });
-    }, [])
+        // 获取频道
+        get('api/channels/').then((ress) => {
+            setChannels(ress.data.results);
+        })
 
-    const handleItemClick = (e, { name }) => setActiveItem(name);
+        // 获取主题
+        get('api/topics/?channel_id=' + channelId, { page: activePageTopic }, true)
+            .then(function (res) {
+                // 处理成功情况
+                setLoading(false)
+                setTopics(res.data.results)
+                setCountPageTopic(Math.ceil(res.data.count / 20))
+                setNextPageTopic(res.data.next)
+                setPrevPageTopic(res.data.previous)
+                setError('')
+                console.log(res);
+            })
+            .catch(function (error) {
+                // 处理错误情况
+                setLoading(false)
+                setTopics([])
+                setError('很抱歉，没有获取到数据！')
+                console.log(error);
+            });
+    }, [channelId, activePageTopic,])
+
+    const handleItemClick = (e, { id }) => {
+        console.log(id);
+        setActiveItem(id);
+        setChannelId(id);
+
+    };
+
+    // 频道列表
+    const channel_list = channels.map((channel) => (
+        <Menu.Item key={channel.id} className={'channel-menu'}
+            id={channel.id}
+            active={activeItem === channel.id}
+            content={channel.name}
+            onClick={handleItemClick}
+        />
+    ));
+
+    // 主题列表
+    const topic_list = topics.map((topic) => (
+        <List.Item key={topic.id}>
+            <List.Content>
+                <List.Header as={Link} to={
+                    {
+                        pathname: '/community/topics/' + topic.id,
+                    }
+                }>
+                    {topic.title}
+                </List.Header>
+                <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")}</p>
+            </List.Content>
+        </List.Item>
+    ));
+
+    // 主题分页
+    const handleTopicPaginationChange = (e, { activePage }) => setActivePage(activePage)
+    const PaginationForTopicList = () => (
+        <Pagination activePage={activePage} totalPages={countPage} onPageChange={handleTopicPaginationChange} />
+    )
+
+    const showTopicEditor = () => {
+        buttonText == '发表主题' ? setButtonText('取消发表') : setButtonText('发表主题')
+        setTopicEditorShow(!topicEditorShow)
+    }
 
     return (
         <Container style={{ padding: '1rem', paddingTop: 0 }} fluid>
@@ -28,7 +106,6 @@ function Home() {
                         <Statistic.Value>2,204</Statistic.Value>
                         <Statistic.Label>Views</Statistic.Label>
                     </Statistic>
-
                     <p>
                         赛凡链是一个完全开放的区块链应用，其所有权属于社区，一经发布，即成为社区的公共财产，不属于任何人私有。
 
@@ -47,30 +124,42 @@ function Home() {
                 <Grid.Row>
                     <Grid.Column width={3}>
                         <Menu fluid vertical tabular>
-                            <Menu.Item
-                                name='bio'
-                                active={activeItem === 'bio'}
-                                onClick={handleItemClick}
-                            />
-                            <Menu.Item
-                                name='pics'
-                                active={activeItem === 'pics'}
-                                onClick={handleItemClick}
-                            />
-                            <Menu.Item
-                                name='companies'
-                                active={activeItem === 'companies'}
-                                onClick={handleItemClick}
-                            />
-                            <Menu.Item
-                                name='links'
-                                active={activeItem === 'links'}
-                                onClick={handleItemClick}
-                            />
+                            {channel_list}
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={7}>
-                        <TopicList />
+                        <div>
+                            <Button floated='' onClick={showTopicEditor}>{buttonText}</Button>
+                            {/* <Input size='small' placeholder='主题名称'/> */}
+                            {topicEditorShow &&
+                                <div>
+                                    <MDEditor style={{ marginTop: 0.5 + 'rem', marginBottom: 0.5 + 'rem' }}
+                                        value={value}
+                                        onChange={setValue}
+                                        preview='edit'
+                                        height={120}
+                                    />
+                                    <Button floated=''>提交</Button>
+                                </div>
+                            }
+
+
+                            {loading &&
+                                <div className="text-center">
+                                    <div className="spinner-border text-secondary" role="status">
+                                        <span className="sr-only">正在加载...</span>
+                                    </div>
+                                </div>
+                            }
+
+                            {!loading && !error &&
+                                <List divided relaxed>{topic_list}</List>
+                            }
+                            {(nextPageTopic || prevPageTopic) &&
+                                <PaginationForTopicList />
+                            }
+
+                        </div>
                     </Grid.Column>
                     <Grid.Column width={6}>
                         <Feed>
