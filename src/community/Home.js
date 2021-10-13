@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createRef } from 'react';
-import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Input } from 'semantic-ui-react';
+import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Form, TextArea } from 'semantic-ui-react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 
@@ -16,49 +16,74 @@ function Home() {
     const [channelId, setChannelId] = useState(1);
 
     // 主题
-    const [loading, setLoading] = useState(true);
-    const [topics, setTopics] = useState([])
-    const [error, setError] = useState('')
-    const [countPageTopic, setCountPageTopic] = useState(0)
-    const [nextPageTopic, setNextPageTopic] = useState(null)
-    const [prevPageTopic, setPrevPageTopic] = useState(null)
-    const [activePageTopic, setActivePageTopic] = useState(1)
-    const [buttonText, setButtonText] = useState('发表主题')
-    const [topicEditorShow, setTopicEditorShow] = useState(false)
-    const [value, setValue] = useState("");
+    const [loadingTopic, setLoadingTopic] = useState(true);
+    const [topics, setTopics] = useState([]);
+    const [topicId, setTopicId] = useState(1);
+    const [error, setError] = useState('');
+    const [countPageTopic, setCountPageTopic] = useState(0);
+    const [nextPageTopic, setNextPageTopic] = useState(null);
+    const [prevPageTopic, setPrevPageTopic] = useState(null);
+    const [activePageTopic, setActivePageTopic] = useState(1);
+    const [buttonTopicText, setButtonTopicText] = useState('发表主题');
+    const [topicEditorShow, setTopicEditorShow] = useState(false);
+    const [valueTopic, setValueTopic] = useState("");
+
+    // 回复
+    const [loadingReply, setLoadingReply] = useState(true);
+    const [replies, setReplies] = useState([]);
+    const [activePageReply, setActivePageReply] = useState(1);
+    const [buttonReplyText, setButtonReplyText] = useState('发表回复');
+    const [replyEditorShow, setReplyEditorShow] = useState(false);
+    const [valueReply, setValueReply] = useState("");
 
     useEffect(() => {
         // 获取频道
         get('api/channels/').then((ress) => {
             setChannels(ress.data.results);
-        })
+        });
+    }, []);
 
+    useEffect(() => {
         // 获取主题
         get('api/topics/?channel_id=' + channelId, { page: activePageTopic }, true)
             .then(function (res) {
                 // 处理成功情况
-                setLoading(false)
-                setTopics(res.data.results)
-                setCountPageTopic(Math.ceil(res.data.count / 20))
-                setNextPageTopic(res.data.next)
-                setPrevPageTopic(res.data.previous)
-                setError('')
+                setLoadingTopic(false);
+                setTopics(res.data.results);
+                setCountPageTopic(Math.ceil(res.data.count / 20));
+                setNextPageTopic(res.data.next);
+                setPrevPageTopic(res.data.previous);
+                setError('');
                 console.log(res);
             })
             .catch(function (error) {
                 // 处理错误情况
-                setLoading(false)
-                setTopics([])
-                setError('很抱歉，没有获取到数据！')
+                setLoadingTopic(false);
+                setTopics([]);
+                setError('很抱歉，没有获取到数据！');
                 console.log(error);
             });
-    }, [channelId, activePageTopic,])
+    }, [channelId, activePageTopic,]);
 
+    useEffect(() => {
+        get('api/replies/?topic_id=' + topicId, { page: activePageReply }, true)
+            .then(function (res) {
+                setLoadingReply(false);
+                setReplies(res.data.results);
+                console.log(res);
+            })
+            .catch(function (error) {
+                setLoadingReply(false);
+                setReplies([]);
+                console.log(error)
+            });
+    }, [])
+
+    // 更换频道
     const handleItemClick = (e, { id }) => {
         console.log(id);
         setActiveItem(id);
         setChannelId(id);
-
     };
 
     // 频道列表
@@ -88,15 +113,41 @@ function Home() {
     ));
 
     // 主题分页
-    const handleTopicPaginationChange = (e, { activePage }) => setActivePage(activePage)
+    const handleTopicPaginationChange = (e, { activePage }) => setActivePageTopic(activePage)
     const PaginationForTopicList = () => (
         <Pagination activePage={activePage} totalPages={countPage} onPageChange={handleTopicPaginationChange} />
-    )
+    );
 
     const showTopicEditor = () => {
-        buttonText == '发表主题' ? setButtonText('取消发表') : setButtonText('发表主题')
+        buttonTopicText == '发表主题' ? setButtonTopicText('取消发表') : setButtonTopicText('发表主题')
         setTopicEditorShow(!topicEditorShow)
-    }
+    };
+
+    // 回复列表
+    const reply_list = replies.map((reply) => (
+        <Feed.Event key={reply.id}>
+            <Feed.Content>
+                <Feed.Summary>
+                    <a>{reply.owner.username}</a>:
+                    <Feed.Date>{moment(reply.created, "YYYYMMDD").fromNow()}</Feed.Date>
+                </Feed.Summary>
+                <Feed.Extra text>
+                    {reply.reply_body}
+                </Feed.Extra>
+            </Feed.Content>
+        </Feed.Event>
+    ));
+
+    // 回复分页
+    const handleReplyPaginationChange = (e, { activePage }) => setActiveTopicPage(activePage)
+    const PaginationForReplyList = () => (
+        <Pagination activePage={activePage} totalPages={countPage} onPageChange={handleReplyPaginationChange} />
+    );
+
+    const showReplyEditor = () => {
+        buttonReplyText == '发表回复' ? setButtonReplyText('取消发表') : setButtonReplyText('发表回复')
+        setReplyEditorShow(!replyEditorShow)
+    };
 
     return (
         <Container style={{ padding: '1rem', paddingTop: 0 }} fluid>
@@ -129,22 +180,21 @@ function Home() {
                     </Grid.Column>
                     <Grid.Column width={7}>
                         <div>
-                            <Button floated='' onClick={showTopicEditor}>{buttonText}</Button>
+                            <Button onClick={showTopicEditor}>{buttonTopicText}</Button>
                             {/* <Input size='small' placeholder='主题名称'/> */}
                             {topicEditorShow &&
                                 <div>
                                     <MDEditor style={{ marginTop: 0.5 + 'rem', marginBottom: 0.5 + 'rem' }}
-                                        value={value}
-                                        onChange={setValue}
+                                        value={valueTopic}
+                                        onChange={setValueTopic}
                                         preview='edit'
                                         height={120}
                                     />
-                                    <Button floated=''>提交</Button>
+                                    <Button>提交</Button>
                                 </div>
                             }
 
-
-                            {loading &&
+                            {loadingTopic &&
                                 <div className="text-center">
                                     <div className="spinner-border text-secondary" role="status">
                                         <span className="sr-only">正在加载...</span>
@@ -152,7 +202,7 @@ function Home() {
                                 </div>
                             }
 
-                            {!loading && !error &&
+                            {!loadingTopic && !error &&
                                 <List divided relaxed>{topic_list}</List>
                             }
                             {(nextPageTopic || prevPageTopic) &&
@@ -162,90 +212,17 @@ function Home() {
                         </div>
                     </Grid.Column>
                     <Grid.Column width={6}>
+                        <Button onClick={showReplyEditor}>{buttonReplyText}</Button>
+                        {replyEditorShow &&
+                            <div>
+                                <Form style={{ marginTop: 0.5 + 'rem', marginBottom: 0.5 + 'rem' }}>
+                                    <TextArea rows={2} placeholder='Tell us more' />
+                                </Form>
+                                <Button>提交</Button>
+                            </div>
+                        }
                         <Feed>
-                            <Feed.Event>
-                                <Feed.Content>
-                                    <Feed.Summary>
-                                        <Feed.User>Elliot Fu</Feed.User> added you as a friend
-                                        <Feed.Date>1 Hour Ago</Feed.Date>
-                                    </Feed.Summary>
-                                    <Feed.Meta>
-                                        <Feed.Like>
-                                            <Icon name='like' />4 Likes
-                                        </Feed.Like>
-                                    </Feed.Meta>
-                                </Feed.Content>
-                            </Feed.Event>
-
-                            <Feed.Event>
-                                <Feed.Content>
-                                    <Feed.Summary>
-                                        <a>Helen Troy</a> added <a>2 new illustrations</a>
-                                        <Feed.Date>4 days ago</Feed.Date>
-                                    </Feed.Summary>
-                                    <Feed.Extra images>
-
-                                    </Feed.Extra>
-                                    <Feed.Meta>
-                                        <Feed.Like>
-                                            <Icon name='like' />1 Like
-                                        </Feed.Like>
-                                    </Feed.Meta>
-                                </Feed.Content>
-                            </Feed.Event>
-
-                            <Feed.Event>
-                                <Feed.Content>
-                                    <Feed.Summary
-                                        date='2 Days Ago'
-                                        user='Jenny Hess'
-                                        content='add you as a friend'
-                                    />
-                                    <Feed.Meta>
-                                        <Feed.Like>
-                                            <Icon name='like' />8 Likes
-                                        </Feed.Like>
-                                    </Feed.Meta>
-                                </Feed.Content>
-                            </Feed.Event>
-
-                            <Feed.Event>
-                                <Feed.Content>
-                                    <Feed.Summary>
-                                        <a>Joe Henderson</a> posted on his page
-                                        <Feed.Date>3 days ago</Feed.Date>
-                                    </Feed.Summary>
-                                    <Feed.Extra text>
-                                        Ours is a life of constant reruns. We're always circling back to where
-                                        we'd we started, then starting all over again. Even if we don't run
-                                        extra laps that day, we surely will come back for more of the same
-                                        another day soon.
-                                    </Feed.Extra>
-                                    <Feed.Meta>
-                                        <Feed.Like>
-                                            <Icon name='like' />5 Likes
-                                        </Feed.Like>
-                                    </Feed.Meta>
-                                </Feed.Content>
-                            </Feed.Event>
-
-                            <Feed.Event>
-                                <Feed.Content>
-                                    <Feed.Summary>
-                                        <a>Justen Kitsune</a> added <a>2 new photos</a> of you
-                                        <Feed.Date>4 days ago</Feed.Date>
-                                    </Feed.Summary>
-                                    <Feed.Extra images>
-
-                                    </Feed.Extra>
-                                    <Feed.Meta>
-                                        <Feed.Like>
-                                            <Icon name='like' />
-                                            41 Likes
-                                        </Feed.Like>
-                                    </Feed.Meta>
-                                </Feed.Content>
-                            </Feed.Event>
+                            {reply_list}
                         </Feed>
                     </Grid.Column>
                 </Grid.Row>
