@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route, Link, useHistory } from 'react-router-dom';
+import {Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import { Button, List, Icon, Pagination } from 'semantic-ui-react';
 import { get } from '../utils/Request';
 
-import { useRecoilState } from 'recoil';
-import { usernameState, userIdState } from '../StateManager';
 
-
-export default function StageList(props) {
-    const { currentUser, currentUserId } = props;
-    const [username, setUsername] = useRecoilState(usernameState)
-
+export default function TopicList() {
     const [loading, setLoading] = useState(true);
-    const [stages, setStages] = useState([])
+    const [topics, setTopics] = useState([])
     const [error, setError] = useState('')
     const [countPage, setCountPage] = useState(0)
     const [nextPage, setNextPage] = useState(null)
@@ -22,11 +16,11 @@ export default function StageList(props) {
     const [activePage, setActivePage] = useState(1)
 
     useEffect(() => {
-        get('works/stage_list_by_author/' + currentUserId + '/', { page: activePage}, true)
+        get('api/topics/', { page: activePage }, true)
             .then(function (res) {
                 // 处理成功情况
                 setLoading(false)
-                setStages(res.data.results)
+                setTopics(res.data.results)
                 setCountPage(Math.ceil(res.data.count / 20))
                 setNextPage(res.data.next)
                 setPrevPage(res.data.previous)
@@ -36,7 +30,7 @@ export default function StageList(props) {
             .catch(function (error) {
                 // 处理错误情况
                 setLoading(false)
-                setStages([])
+                setTopics([])
                 setError('很抱歉，没有获取到数据！')
                 console.log(error);
             });
@@ -45,33 +39,22 @@ export default function StageList(props) {
 
     // 分页
     const handlePaginationChange = (e, { activePage }) => setActivePage(activePage)
-    const PaginationForStageList = () => (
+    const PaginationForTopicList = () => (
         <Pagination activePage={activePage} totalPages={countPage} onPageChange={handlePaginationChange} />
     )
 
     // 列表
-    const stage_list = stages.map((stage) => (
-        <List.Item key={stage.id}>
-            <List.Content floated='right'>
-                {currentUser === username &&
-                    <Button size='mini' animated='vertical' as={Link} to={{ pathname: '/space/stage/edit/' + stage.id }}>
-                        <Button.Content hidden>编辑</Button.Content>
-                        <Button.Content visible>
-                            <Icon name='write square' />
-                        </Button.Content>
-                    </Button>
-                }
-            </List.Content>
+    const topic_list = topics.map((topic) => (
+        <List.Item key={topic.id}>
             <List.Content>
                 <List.Header as={Link} to={
                     {
-                        pathname: '/space/stage/' + stage.id,
+                        pathname: '/community/topics/' + topic.id,
                     }
                 }>
-                    {stage.title}
+                    {topic.title}
                 </List.Header>
-                <p className='title-sub'>{moment(stage.created).format("YYYY年MM月DD日HH时mm分")}</p>
-                <List.Description>{stage.summary}</List.Description>
+                <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")}</p>
             </List.Content>
         </List.Item>
     ));
@@ -87,10 +70,10 @@ export default function StageList(props) {
             }
 
             {!loading && !error &&
-                <List divided relaxed>{stage_list}</List>
+                <List divided relaxed>{topic_list}</List>
             }
             {(nextPage || prevPage) &&
-                <PaginationForStageList />
+                <PaginationForTopicList />
             }
 
         </div>
