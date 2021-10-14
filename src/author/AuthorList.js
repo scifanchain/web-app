@@ -1,5 +1,6 @@
 import React, {useEffect, useState } from 'react'
 import { Header, Image, Table } from 'semantic-ui-react'
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import config from '../config';
@@ -24,7 +25,10 @@ export default function AuthorList() {
                     {/* <Image src='https://react.semantic-ui.com/images/avatar/small/lena.png' rounded size='mini' /> */}
                     {/* <Image src={config.URL + 'media/avatars/2021/' + username + '.svg'} avatar id='AvatarTiny' /> */}
                     <Image src={config.URL + 'media/avatars/2021/' + author.username + '.svg'} rounded size='mini' />
-                    <Header.Content>
+                    <Header.Content as={Link} to={{
+                        pathname: '/' + author.username,
+                        state: { currentUser: author.username, currentUserId: author.id }
+                    }}>
                         {author.username}
                         <Header.Subheader>{moment(author.last_login).format("YYYY年MM月DD日HH时mm分")}</Header.Subheader>
                     </Header.Content>

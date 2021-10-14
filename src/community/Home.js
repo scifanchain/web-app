@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createRef } from 'react';
-import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Form, TextArea, Input } from 'semantic-ui-react';
+import { Container, Segment, Statistic, Grid, Menu, Feed, Icon, List, Pagination, Button, Form, TextArea, Input, Divider } from 'semantic-ui-react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 
@@ -26,6 +26,7 @@ function Home() {
     const [topics, setTopics] = useState([]);
     const [topicId, setTopicId] = useState(0);
     const [error, setError] = useState('');
+    const [countTopicTotal, setCountTopicTotal] = useState(0);
     const [countPageTopic, setCountPageTopic] = useState(0);
     const [nextPageTopic, setNextPageTopic] = useState(null);
     const [prevPageTopic, setPrevPageTopic] = useState(null);
@@ -34,17 +35,21 @@ function Home() {
     const [topicEditorShow, setTopicEditorShow] = useState(false);
     const [valueTopicTitle, setValueTopicTitle] = useState('');
     const [valueTopicBody, setValueTopicBody] = useState("");
-    const [topUpdated, setTopicUpdated] = useState(false);
+    const [topicUpdated, setTopicUpdated] = useState(false);
 
     // 回复
     const [loadingReply, setLoadingReply] = useState(true);
     const [replies, setReplies] = useState([]);
-    const [activePageReply, setActivePageReply] = useState(1);
     const [buttonReplyText, setButtonReplyText] = useState('发表回复');
     const [replyEditorShow, setReplyEditorShow] = useState(false);
     const [valueReply, setValueReply] = useState("");
+    const [replyUpdated, setReplyUpdated] = useState(false);
 
-    const [replyBody, setReplyBody] = useState('');
+    const [activePageReply, setActivePageReply] = useState(1);
+    const [countReplyTotal, setCountReplyTotal] = useState(0);
+    const [countPageReply, setCountPageReply] = useState(0);
+    const [nextPageReply, setNextPageReply] = useState(null);
+    const [prevPageReply, setPrevPageReply] = useState(null);
 
     useEffect(() => {
         // 获取频道
@@ -60,12 +65,13 @@ function Home() {
                 // 处理成功情况
                 setLoadingTopic(false);
                 setTopics(res.data.results);
+                setCountTopicTotal(res.data.count);
                 setCountPageTopic(Math.ceil(res.data.count / 20));
                 setNextPageTopic(res.data.next);
                 setPrevPageTopic(res.data.previous);
                 setError('');
                 console.log(res);
-                setFirstTopicId(res.data.results);
+                setCurrentTopicId(res.data.results);
             })
             .catch(function (error) {
                 // 处理错误情况
@@ -74,30 +80,35 @@ function Home() {
                 setError('很抱歉，没有获取到数据！');
                 console.log(error);
             });
-    }, [channelId, activePageTopic, topUpdated,]);
-
-    const getTopicBody = (topic_id) => {
-        // setTopicId(topic_id);
-        // get('api/topics/' + topic_id).then((res) => {
-
-        // })
-        console.log(topic_id)
-
-    }
+    }, [channelId, activePageTopic, topicUpdated,]);
 
     // 发布topic
     const postTopic = () => {
-        post('/api/topics/', { title: valueTopicTitle, topic_body: valueTopicBody, channel: channelId, owner: userId }, true)
+        post('api/topics/', { title: valueTopicTitle, topic_body: valueTopicBody, channel: channelId }, true)
             .then((res) => {
                 console.log(res);
-                showTopicEditor();
+                toggleTopicEditor();
                 setValueTopicTitle("");
                 setValueTopicBody("");
-                setTopicUpdated(!topUpdated);
+                setTopicUpdated(!topicUpdated);
             }).catch((err) => {
                 console.log(err);
             })
     };
+
+    // 发布reply
+    const postReply = () => {
+        const reply_body = document.getElementById("ReplyBody").value;
+        post('api/replies/', { target: topicId, reply_body: reply_body }, true)
+            .then((res) => {
+                console.log(res);
+                toggleReplyEditor();
+                setValueReply("");
+                setReplyUpdated(!replyUpdated);
+            }).catch((err) => {
+                console.log(err);
+            })
+    }
 
     // 获取输入topic的标题
     function handleTopicTitleChange(e) {
@@ -118,7 +129,7 @@ function Home() {
                 setReplies([]);
                 console.log(error)
             });
-    }, [topicId,]);
+    }, [topicId, replyUpdated]);
 
 
     // 更换频道
@@ -138,14 +149,18 @@ function Home() {
         />
     ));
 
-    function setFirstTopicId(topics) {
-        for (var k in topics) {
-            if (k == 1) {
-                console.log(k)
-                // setTopicId(topics[k].id);
+    function setCurrentTopicId(topics) {
+        for (var key in topics) {
+            if (key == 0) {
+                setTopicId(topics[key].id);
+                console.log(topics[key].id);
                 break;
-            } 
+            }
         }
+    }
+
+    function handleGetTopicBody(topic_id) {
+        setTopicId(topic_id);
     }
 
     // 主题列表
@@ -153,10 +168,15 @@ function Home() {
         return (
             <List.Item key={topic.id}>
                 <List.Content>
-                    <List.Header as={'a'} onClick={getTopicBody(topic.id)}>
+                    <List.Header as={'a'} onClick={() => handleGetTopicBody(topic.id)} style={{}}>
                         {topic.title}
                     </List.Header>
-                    <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")}</p>
+                    {topicId == topic.id &&
+                        <List.Description style={{ marginTop: 1 + 'rem', marginBottom: 1 + 'rem', fontSize: 0.5 + 'rem' }}>
+                            <MDEditor.Markdown source={topic.topic_body} />
+                        </List.Description>
+                    }
+                    <p className='title-sub'>{moment(topic.created).format("YYYY年MM月DD日HH时mm分")} by <span>{topic.owner.username}</span></p>
                 </List.Content>
             </List.Item>
         )
@@ -165,36 +185,32 @@ function Home() {
     // 主题分页
     const handleTopicPaginationChange = (e, { activePage }) => setActivePageTopic(activePage)
     const PaginationForTopicList = () => (
-        <Pagination activePage={activePage} totalPages={countPage} onPageChange={handleTopicPaginationChange} />
+        <Pagination size='mini' activePage={activePageTopic} totalPages={countPageTopic} onPageChange={handleTopicPaginationChange} />
     );
 
-    const showTopicEditor = () => {
+    const toggleTopicEditor = () => {
         buttonTopicText == '发表主题' ? setButtonTopicText('取消发表') : setButtonTopicText('发表主题')
         setTopicEditorShow(!topicEditorShow)
     };
 
     // 回复列表
     const reply_list = replies.map((reply) => (
-        <Feed.Event key={reply.id}>
-            <Feed.Content>
-                <Feed.Summary>
-                    <a>{reply.owner.username}</a>:
-                    <Feed.Date>{moment(reply.created, "YYYYMMDD").fromNow()}</Feed.Date>
-                </Feed.Summary>
-                <Feed.Extra text>
-                    {reply.reply_body}
-                </Feed.Extra>
-            </Feed.Content>
-        </Feed.Event>
+        <Segment basic key={reply.id}>
+            <div>
+                <a>{reply.owner.username}</a>回复说:
+            </div>
+            <div> {reply.reply_body} </div>
+            <p className='small'>{moment(reply.created).utcOffset(8).fromNow()}</p>
+        </Segment>
     ));
 
     // 回复分页
-    const handleReplyPaginationChange = (e, { activePage }) => setActiveTopicPage(activePage)
+    const handleReplyPaginationChange = (e, { activePage }) => setActiveReplyPage(activePage)
     const PaginationForReplyList = () => (
-        <Pagination activePage={activePage} totalPages={countPage} onPageChange={handleReplyPaginationChange} />
+        <Pagination activePage={activePageReply} totalPages={countPageReply} onPageChange={handleReplyPaginationChange} />
     );
 
-    const showReplyEditor = () => {
+    const toggleReplyEditor = () => {
         buttonReplyText == '发表回复' ? setButtonReplyText('取消发表') : setButtonReplyText('发表回复')
         setReplyEditorShow(!replyEditorShow)
     };
@@ -204,8 +220,8 @@ function Home() {
             <Grid>
                 <Segment>
                     <Statistic floated='right'>
-                        <Statistic.Value>2,204</Statistic.Value>
-                        <Statistic.Label>Views</Statistic.Label>
+                        <Statistic.Value>{countTopicTotal}</Statistic.Value>
+                        <Statistic.Label>主题</Statistic.Label>
                     </Statistic>
                     <p>
                         赛凡链是一个完全开放的区块链应用，其所有权属于社区，一经发布，即成为社区的公共财产，不属于任何人私有。
@@ -216,21 +232,18 @@ function Home() {
                     </p>
 
                     <p>
-                        开发上线后，治理权即交由社区。区块链的社区治理逐步进行，先由创始团队托管一段时间，当社区成熟之成，逐步移交社区。社区在发展演进中，逐步探索出合理的治理模式。
-                    </p>
-                    <p>
-                        社区保持全球开放性，我们欢迎各个国家、各种文化种族的科幻爱好者加入，共同建设。现阶段尤其需要具备多语言背景、熟悉编程技术和互联网文化的同行者。
+                        开发上线后，区块链的社区治理逐步进行，先由创始团队托管一段时间，当社区成熟之成，逐步移交社区。社区在发展演进中，逐步探索出合理的治理模式。
                     </p>
                 </Segment>
                 <Grid.Row>
-                    <Grid.Column width={3}>
+                    <Grid.Column width={2}>
                         <Menu fluid vertical tabular>
                             {channel_list}
                         </Menu>
                     </Grid.Column>
-                    <Grid.Column width={7}>
+                    <Grid.Column width={8}>
                         <div>
-                            <Button onClick={showTopicEditor}>{buttonTopicText}</Button>
+                            <Button onClick={toggleTopicEditor}>{buttonTopicText}</Button>
                             {topicEditorShow &&
                                 <div>
                                     <Input size='mini' fluid placeholder='主题名称' style={{ marginTop: 0.5 + 'rem' }} onChange={handleTopicTitleChange} />
@@ -262,18 +275,21 @@ function Home() {
                         </div>
                     </Grid.Column>
                     <Grid.Column width={6}>
-                        <Button onClick={showReplyEditor}>{buttonReplyText}</Button>
+                        <Button onClick={toggleReplyEditor}>{buttonReplyText}</Button>
                         {replyEditorShow &&
                             <div>
                                 <Form style={{ marginTop: 0.5 + 'rem', marginBottom: 0.5 + 'rem' }}>
-                                    <TextArea rows={2} placeholder='Tell us more' />
+                                    <TextArea rows={2} placeholder='说点什么……' id='ReplyBody' />
                                 </Form>
-                                <Button>提交</Button>
+                                <Button onClick={postReply}>提交</Button>
                             </div>
                         }
-                        <Feed>
+                        <div>
                             {reply_list}
-                        </Feed>
+                        </div>
+                        {(nextPageReply || prevPageReply) &&
+                            <PaginationForReplyList />
+                        }
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
