@@ -41,7 +41,7 @@ export default function AuthorList() {
         <Table basic='very' celled >
             <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell>最近活跃用户</Table.HeaderCell>
+                    <Table.HeaderCell>新加入作者</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 

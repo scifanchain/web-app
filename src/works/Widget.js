@@ -36,16 +36,15 @@ function StagePersonListWidget() {
     return (
         <Segment.Group>
             <Segment secondary key='mini' size='mini'>
-                <Button
+                {/* <Button
                     compact
                     size='small'
                     floated='right'
                     onClick={updateList}
                 >
                     换一批
-                </Button>
+                </Button> */}
                 人物 <Label circular>{stagesPersonCount}</Label>
-
             </Segment>
             <Segment>
                 <List>
@@ -83,16 +82,15 @@ function StagePlaceListWidget() {
     return (
         <Segment.Group>
             <Segment secondary key='mini' size='mini'>
-                <Button
+                {/* <Button
                     compact
                     size='small'
                     floated='right'
-                    onClick={() => dispatch({ type: 'clearLog' })}
+                    // onClick={() => dispatch({ type: 'clearLog' })}
                 >
                     换一批
-                </Button>
+                </Button> */}
                 地点 <Label circular>{stagesPlaceCount}</Label>
-
             </Segment>
             <Segment>
                 <List>
@@ -130,16 +128,15 @@ function StageEventListWidget() {
     return (
         <Segment.Group>
             <Segment secondary key='mini' size='mini'>
-                <Button
+                {/* <Button
                     compact
                     size='small'
                     floated='right'
                     onClick={() => dispatch({ type: 'clearLog' })}
                 >
                     换一批
-                </Button>
+                </Button> */}
                 事件 <Label circular>{stagesEventCount}</Label>
-
             </Segment>
             <Segment>
                 <List>
@@ -177,16 +174,15 @@ function StageConceptListWidget() {
     return (
         <Segment.Group>
             <Segment secondary key='mini' size='mini'>
-                <Button
+                {/* <Button
                     compact
                     size='small'
                     floated='right'
                     onClick={() => dispatch({ type: 'clearLog' })}
                 >
                     换一批
-                </Button>
+                </Button> */}
                 概念 <Label circular>{stagesConceptCount}</Label>
-
             </Segment>
             <Segment>
                 <List>

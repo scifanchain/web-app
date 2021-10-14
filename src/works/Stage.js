@@ -21,9 +21,9 @@ export default function Stage() {
           <StageDetail />
         </Grid.Column>
         <Grid.Column width={3}>
-          <Header>作品属性</Header>
-          <Header>作者</Header>
-          <Header>历史版本</Header>
+          <Header as='h3'>作品元数据</Header>
+          <Header as='h3'>作者信息</Header>
+          <Header as='h3'>历史版本</Header>
         </Grid.Column>
       </Grid.Row>
     </Grid>

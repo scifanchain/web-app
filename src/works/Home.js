@@ -19,9 +19,10 @@ function WorksHome() {
                     <StageConceptListWidget/>
                 </Grid.Column>
                 <Grid.Column width={10}>
-                    <Advertisement unit='panorama' test='无论是一个有想象力的创意，还是一篇科幻故事，都可以在以区块链为主导的Web3.0时代彰显其从前被忽视的价值。'
+                    {/* <Advertisement unit='panorama' test='无论是一个有想象力的创意，还是一篇科幻故事，都可以在以区块链为主导的Web3.0时代彰显其从前被忽视的价值。'
                         style={{ width: "100%", marginBottom: "1rem" }}
-                    />
+                    /> */}
+                    <Image src='images/ad_works_01.png'></Image>
                     <Header as='h3'>
                         最新作品
                     </Header>

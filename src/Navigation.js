@@ -33,7 +33,7 @@ function Navigation() {
             <Menu.Item header as={Link} to='/'
                 name='home'
                 active={activeItem === '/home'}
-                content="赛凡首页"
+                content="赛凡链"
                 onClick={handleItemClick}>
             </Menu.Item>
             <Menu.Item as={Link} to='/works'
