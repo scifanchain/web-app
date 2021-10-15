@@ -27,6 +27,5 @@ export default function Stage() {
         </Grid.Column>
       </Grid.Row>
     </Grid>
-
   )
 }

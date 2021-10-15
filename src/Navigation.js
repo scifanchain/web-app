@@ -29,7 +29,7 @@ function Navigation() {
 
     return (
         <Menu pointing inverted id='TopNav'>
-            {/* <Image src={`${process.env.PUBLIC_URL}/assets/scifanchain_logo_black_white.png`} size='mini' /> */}
+            <Image src={`${process.env.PUBLIC_URL}/assets/scifan_logo_pure.png`} verticalAlign='middle'/>
             <Menu.Item header as={Link} to='/'
                 name='home'
                 active={activeItem === '/home'}
