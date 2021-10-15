@@ -28,8 +28,8 @@ function changeAvatar() {
             if (res.data !== "") {
                 console.log(res.data)
                 let i = Math.random();
-                document.getElementById("Avatar").src = config.URL + res.data + ".svg?i=" + i;
-                document.getElementById("AvatarTiny").src = config.URL + res.data + ".svg?i=" + i;
+                document.getElementById("Avatar").src = config.API_URL + res.data + ".svg?i=" + i;
+                document.getElementById("AvatarTiny").src = config.API_URL + res.data + ".svg?i=" + i;
             }
             else (
                 console.log('error')
