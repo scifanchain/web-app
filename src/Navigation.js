@@ -62,7 +62,7 @@ function Navigation() {
             {username &&
                 <Menu.Menu position='right'>
                     <Menu.Item>
-                        <Image src={config.URL + 'media/avatars/2021/' + username + '.svg'} avatar id='AvatarTiny' />
+                        <Image src={config.API_URL + 'media/avatars/2021/' + username + '.svg'} avatar id='AvatarTiny' />
                     </Menu.Item>
                     <Dropdown
                         text={username} pointing className='link item'>
