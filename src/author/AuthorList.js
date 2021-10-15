@@ -24,7 +24,7 @@ export default function AuthorList() {
                 <Header as='h4' image>
                     {/* <Image src='https://react.semantic-ui.com/images/avatar/small/lena.png' rounded size='mini' /> */}
                     {/* <Image src={config.URL + 'media/avatars/2021/' + username + '.svg'} avatar id='AvatarTiny' /> */}
-                    <Image src={config.URL + 'media/avatars/2021/' + author.username + '.svg'} rounded size='mini' />
+                    <Image src={config.API_URL + 'media/avatars/2021/' + author.username + '.svg'} rounded size='mini' />
                     <Header.Content as={Link} to={{
                         pathname: '/' + author.username,
                         state: { currentUser: author.username, currentUserId: author.id }
