@@ -3,7 +3,7 @@ const storage = window.localStorage;
 
 export async function SaveAuthorToken(username, props) {
     const { access, refresh } = props
-
+    
     // 对返回的tokon解码
     // 将解码后的字符串转为json对象
     const payload = access.split('.')[1]

@@ -27,7 +27,7 @@ function SignIn() {
         RemoveAuthorToken();
         setUsername('');
 
-    })
+    }, [])
 
     function handleChange(e) {
         setState({
