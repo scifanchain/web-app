@@ -48,7 +48,7 @@ function StageList() {
             <List.Content>
                 <List.Header as={Link} to={
                     {
-                        pathname: '/space/stage/' + stage.id,
+                        pathname: '/stage/' + stage.id,
                     }
                 }>
                     {stage.title}

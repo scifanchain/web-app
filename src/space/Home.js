@@ -64,7 +64,6 @@ export default function SpaceHome() {
             })
             .catch((error) => {
                 console.log(error);
-                setPage404(true);
             })
     }, [currentUser])
 
