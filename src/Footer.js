@@ -14,7 +14,17 @@ export default function Footer() {
                 <Menu.Item
                     as={Link}
                     to={{
-                        pathname = 'https://whitebook.scifanchain.com'
+                        pathname: 'https://beian.miit.gov.cn/'
+                    }}
+                    name='beian'
+                    active={activeItem === 'beian'}
+                    content="晋ICP备18012939号-8"
+                    onClick={handleItemClick}
+                />
+                <Menu.Item
+                    as={Link}
+                    to={{
+                        pathname:'https://whitebook.scifanchain.com'
                     }}
                     name='whitebook'
                     active={activeItem === 'whitebook'}
@@ -24,7 +34,7 @@ export default function Footer() {
                 <Menu.Item
                     as={Link}
                     to={{
-                        pathname = 'https://whitebook.scifanchain.com'
+                        pathname:'https://whitebook.scifanchain.com'
                     }}
                     name='docs'
                     active={activeItem === 'docs'}

@@ -28,6 +28,7 @@
     "@uiw/react-md-editor": "^3.6.5",
     "axios": "^0.22.0",
     "eslint-config-react-app": "^6.0.0",
+    "http-proxy-middleware": "^2.0.1",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
     "query-string": "^6.13.5",

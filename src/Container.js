@@ -15,6 +15,7 @@ import Community from './community/Home';
 import Works from './works/Home';
 import Expedition from './Expedition';
 import Blog from './blogs/Home';
+import Test from './Test';
 
 export default function Content() {
   return (
@@ -32,9 +33,9 @@ export default function Content() {
       <Route path='/community' component={Community} />
       <Route path='/expedition' component={Expedition} />
       <Route path='/stage/:stage_id' component={Stage} />
+      <Route path='/test' exact component={Test} />
       <Route path='/' exact component={Home} />
       <Route path='/:username' component={Space} />
-      {/* <Route path='/test' exact component={Test} /> */}
     </Switch>
   )
 }

@@ -1,26 +1,24 @@
-import React, { useEffect, useState, createRef, createContext } from 'react';
-import { Link } from 'react-router-dom';
-import { Grid, List, Header } from 'semantic-ui-react';
+//页面代码：
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
 
-import { get, post} from './utils/Request'
-
-
-
-export default function Test() {
-    const [token, setToken] = useState('hello, world!');
+const App = function () {
 
     useEffect(() => {
-        get('/authors/me/', {}, true)
-            .then(function (response) {
-                // console.log(response.data.author);
-                // console.log(response.config);
-                setToken(response.data.author)
-            });
-        
-        get('/authors/current/', {}, true);
-        
-    }, []); 
+        axios.post('/sxnw', {
+            "msg": "GET_TOKEN_REQ",
+            "inf": {
+                "user": "sxnw",
+                "password": "111111"
+            }
+        }).then(function (res) {
+            console.log(res);
+        })
+    }, [])
 
-    return <h1>{token}</h1>;
-
+    return (
+        <h1>获取的IP信息：</h1>
+    )
 }
+
+export default App
